@@ -8,6 +8,7 @@ import LeaderboardModal from './components/LeaderboardModal';
 import { LeftSidebar, RightSidebar } from './components/ArcadeSidebars';
 import { saveScore } from './utils/leaderboardApi';
 import CookieConsentBanner from './components/CookieConsentBanner';
+import UsernameModal from './components/UsernameModal';
 
 const PLAYER_NAME_KEY = 'arcade_player_name_v1';
 const PLAYER_LOCKED_KEY = 'arcade_name_locked_v1';
@@ -18,35 +19,26 @@ export default function App() {
   const [isMuted, setIsMuted] = useState(false);
   const [playerName, setPlayerNameState] = useState(() => {
     try {
-      return localStorage.getItem(PLAYER_NAME_KEY) || 'Player 1';
+      return localStorage.getItem(PLAYER_NAME_KEY) || '';
     } catch (e) {
-      return 'Player 1';
+      return '';
     }
   });
 
   const [isNameLocked, setIsNameLocked] = useState(() => {
     try {
-      return localStorage.getItem(PLAYER_LOCKED_KEY) === 'true';
+      return localStorage.getItem(PLAYER_LOCKED_KEY) === 'true' && Boolean(localStorage.getItem(PLAYER_NAME_KEY));
     } catch (e) {
       return false;
     }
   });
 
-  const handleUpdatePlayerName = (name) => {
-    setPlayerNameState(name);
-    try {
-      localStorage.setItem(PLAYER_NAME_KEY, name || 'Player 1');
-    } catch (e) {
-      // Ignore error
-    }
-  };
-
-  const handleLockPlayerName = (name) => {
-    const finalName = name || playerName || 'Player 1';
-    setPlayerNameState(finalName);
+  const handleClaimUsername = (claimedName) => {
+    const clean = claimedName.trim();
+    setPlayerNameState(clean);
     setIsNameLocked(true);
     try {
-      localStorage.setItem(PLAYER_NAME_KEY, finalName);
+      localStorage.setItem(PLAYER_NAME_KEY, clean);
       localStorage.setItem(PLAYER_LOCKED_KEY, 'true');
     } catch (e) {
       // Ignore error
@@ -54,7 +46,7 @@ export default function App() {
   };
 
   const handleResetPlayerName = () => {
-    setPlayerNameState('Player 1');
+    setPlayerNameState('');
     setIsNameLocked(false);
     try {
       localStorage.removeItem(PLAYER_NAME_KEY);
@@ -102,9 +94,6 @@ export default function App() {
           {currentView === 'ping-pong' && (
             <PingPongGame
               playerName={playerName}
-              isNameLocked={isNameLocked}
-              onUpdatePlayerName={handleUpdatePlayerName}
-              onLockPlayerName={handleLockPlayerName}
               onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
@@ -114,9 +103,6 @@ export default function App() {
           {currentView === 'breakout' && (
             <BreakoutGame
               playerName={playerName}
-              isNameLocked={isNameLocked}
-              onUpdatePlayerName={handleUpdatePlayerName}
-              onLockPlayerName={handleLockPlayerName}
               onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
@@ -126,9 +112,6 @@ export default function App() {
           {currentView === 'minesweeper' && (
             <MinesweeperGame
               playerName={playerName}
-              isNameLocked={isNameLocked}
-              onUpdatePlayerName={handleUpdatePlayerName}
-              onLockPlayerName={handleLockPlayerName}
               onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
@@ -138,9 +121,6 @@ export default function App() {
           {currentView === 'typing' && (
             <TypingGame
               playerName={playerName}
-              isNameLocked={isNameLocked}
-              onUpdatePlayerName={handleUpdatePlayerName}
-              onLockPlayerName={handleLockPlayerName}
               onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
@@ -155,6 +135,11 @@ export default function App() {
         />
 
       </div>
+
+      <UsernameModal
+        isOpen={!isNameLocked || !playerName}
+        onSubmitUsername={handleClaimUsername}
+      />
 
       <LeaderboardModal
         isOpen={isLeaderboardOpen}

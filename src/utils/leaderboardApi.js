@@ -34,6 +34,25 @@ export const getLeaderboard = async () => {
   return SAMPLE_SCORES;
 };
 
+export const checkUsernameAvailability = async (username) => {
+  if (!username || !username.trim()) return { available: false, reason: 'Username cannot be empty' };
+  const cleaned = username.trim().toLowerCase();
+  
+  if (cleaned === 'player 1' || cleaned === 'player1' || cleaned === 'guest' || cleaned === 'admin') {
+    return { available: false, reason: 'This username is reserved. Please pick another handle.' };
+  }
+
+  const scores = await getLeaderboard();
+  if (Array.isArray(scores)) {
+    const isTaken = scores.some(s => s.playerName && s.playerName.trim().toLowerCase() === cleaned);
+    if (isTaken) {
+      return { available: false, reason: `Username "${username.trim()}" is taken on the leaderboard.` };
+    }
+  }
+
+  return { available: true, reason: `Username "${username.trim()}" is available!` };
+};
+
 export const saveScore = async (scoreEntry) => {
   try {
     const res = await fetch(`${API_BASE_URL}/scores`, {

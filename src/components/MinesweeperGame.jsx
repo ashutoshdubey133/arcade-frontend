@@ -18,10 +18,7 @@ const TUTORIAL_MINE_POSITIONS = [[0, 3], [3, 0], [3, 3]];
 export default function MinesweeperGame({ 
   onBackToHub, 
   onSaveScore, 
-  playerName = 'Player 1', 
-  isNameLocked = false, 
-  onUpdatePlayerName, 
-  onLockPlayerName, 
+  playerName = 'Player', 
   onResetPlayerName 
 }) {
   // Game Setup
@@ -208,7 +205,6 @@ export default function MinesweeperGame({
 
     // First Click Initialization
     if (gameStatus === 'idle' && !isTutorial) {
-      if (onLockPlayerName) onLockPlayerName(playerName);
       const config = DIFFICULTY_CONFIG[difficulty];
       plantMines(r, c, currentGrid, config.rows, config.cols, config.mines);
       setGameStatus('playing');
@@ -403,42 +399,22 @@ export default function MinesweeperGame({
         </button>
 
         <div className="flex items-center gap-2.5">
-          {isNameLocked ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-950 border border-purple-500/40 rounded-lg text-xs font-mono">
-              <span className="font-bold text-slate-200">{playerName}</span>
-              <span className="text-[10px] text-purple-400" title="Locked to Profile">🔒</span>
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.confirm("Clearing your handle requires resetting your local player cookies & browser profile. Proceed?")) {
-                    onResetPlayerName();
-                  }
-                }}
-                className="text-[10px] text-slate-400 hover:text-red-400 ml-1 font-sans"
-                title="Clear profile cookies"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1">
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
-                placeholder="Player Name"
-                className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-slate-100 text-xs w-28 focus:outline-none focus:border-cyan-500"
-              />
-              <button
-                type="button"
-                onClick={() => onLockPlayerName && onLockPlayerName(playerName)}
-                className="px-2 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded text-[10px] font-bold"
-                title="Save & Lock Handle"
-              >
-                🔒
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-950 border border-purple-500/40 rounded-lg text-xs font-mono">
+            <span className="font-bold text-slate-200">{playerName}</span>
+            <span className="text-[10px] text-purple-400" title="Locked to Profile">🔒</span>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm("Clearing your handle requires resetting your local player cookies & browser profile. Proceed?")) {
+                  onResetPlayerName();
+                }
+              }}
+              className="text-[10px] text-slate-400 hover:text-red-400 ml-1 font-sans"
+              title="Clear profile cookies"
+            >
+              ✕
+            </button>
+          </div>
 
           <select
             value={isTutorial ? 'tutorial' : difficulty}

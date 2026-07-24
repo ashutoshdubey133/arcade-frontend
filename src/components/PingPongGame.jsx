@@ -19,10 +19,7 @@ import PlayerHandleWidget from './PlayerHandleWidget';
 export default function PingPongGame({ 
   onBackToHub, 
   onSaveScore, 
-  playerName = 'Player 1', 
-  isNameLocked = false, 
-  onUpdatePlayerName, 
-  onLockPlayerName, 
+  playerName = 'Player', 
   onResetPlayerName 
 }) {
   // Game Configuration State
@@ -118,7 +115,6 @@ export default function PingPongGame({
 
   // Start New Game
   const startGame = () => {
-    if (onLockPlayerName) onLockPlayerName(playerName);
     const engine = engineState.current;
     engine.p1Y = CANVAS_HEIGHT / 2 - INITIAL_PADDLE_HEIGHT / 2;
     engine.p2Y = CANVAS_HEIGHT / 2 - INITIAL_PADDLE_HEIGHT / 2;
@@ -658,9 +654,6 @@ export default function PingPongGame({
               <div className="w-full mb-3">
                 <PlayerHandleWidget
                   playerName={playerName}
-                  isNameLocked={isNameLocked}
-                  onUpdatePlayerName={onUpdatePlayerName}
-                  onLockPlayerName={onLockPlayerName}
                   onResetPlayerName={onResetPlayerName}
                   accentColor="cyan"
                 />

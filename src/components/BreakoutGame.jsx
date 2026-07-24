@@ -25,10 +25,7 @@ import PlayerHandleWidget from './PlayerHandleWidget';
 export default function BreakoutGame({ 
   onBackToHub, 
   onSaveScore, 
-  playerName = 'Player 1', 
-  isNameLocked = false, 
-  onUpdatePlayerName, 
-  onLockPlayerName, 
+  playerName = 'Player', 
   onResetPlayerName 
 }) {
   // Game state
@@ -184,7 +181,6 @@ export default function BreakoutGame({
 
   // Start new game
   const startGame = () => {
-    if (onLockPlayerName) onLockPlayerName(playerName);
     const engine = engineState.current;
     engine.paddleWidth = INITIAL_PADDLE_WIDTH;
     engine.paddleX = CANVAS_WIDTH / 2 - INITIAL_PADDLE_WIDTH / 2;
@@ -767,9 +763,6 @@ export default function BreakoutGame({
               <div className="mb-4 w-full text-left">
                 <PlayerHandleWidget
                   playerName={playerName}
-                  isNameLocked={isNameLocked}
-                  onUpdatePlayerName={onUpdatePlayerName}
-                  onLockPlayerName={onLockPlayerName}
                   onResetPlayerName={onResetPlayerName}
                   accentColor="amber"
                 />

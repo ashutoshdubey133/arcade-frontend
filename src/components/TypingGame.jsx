@@ -75,10 +75,7 @@ import PlayerHandleWidget from './PlayerHandleWidget';
 export default function TypingGame({ 
   onBackToHub, 
   onSaveScore, 
-  playerName = 'Player 1', 
-  isNameLocked = false, 
-  onUpdatePlayerName, 
-  onLockPlayerName, 
+  playerName = 'Player', 
   onResetPlayerName 
 }) {
   const [gameState,      setGameState]      = useState('menu'); // 'menu', 'playing', 'wave_clear', 'gameover'
@@ -429,7 +426,6 @@ export default function TypingGame({
   };
 
   const startGame = () => {
-    if (onLockPlayerName) onLockPlayerName(playerName);
     setScore(0);
     setHealth(100);
     setCombo(0);
@@ -966,9 +962,6 @@ export default function TypingGame({
 
               <PlayerHandleWidget
                 playerName={playerName}
-                isNameLocked={isNameLocked}
-                onUpdatePlayerName={onUpdatePlayerName}
-                onLockPlayerName={onLockPlayerName}
                 onResetPlayerName={onResetPlayerName}
                 accentColor="cyan"
               />
