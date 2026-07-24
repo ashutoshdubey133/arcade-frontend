@@ -436,7 +436,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       const waveConfig = getWaveConfig(wave);
 
       // Spawning Logic for Wave
-      if (wordsSpawnedInWave.current < waveConfig.targetCount) {
+      if (!isFrozen && wordsSpawnedInWave.current < waveConfig.targetCount) {
         if (now - lastSpawnTime.current > waveConfig.spawnInterval) {
           lastSpawnTime.current = now;
           wordsSpawnedInWave.current++;
@@ -461,7 +461,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
             const word = pickWordForWave(waveConfig.lengthWeights);
             const colors = ['#06b6d4', '#a855f7', '#f43f5e', '#f59e0b', '#10b981'];
 
-            // KEY GAMIFICATION FIX: Long words fall slower so player has time to type them out!
+            // Long words fall slower so player has time to type them out!
             const lengthSpeedFactor = Math.max(0.55, 1.0 - (word.length - 1) * 0.08);
             const speed = waveConfig.baseSpeed * lengthSpeedFactor + (Math.random() * 0.15 - 0.075);
 
@@ -477,6 +477,9 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
             });
           }
         }
+      } else if (isFrozen) {
+        // Keep spawn timer updated so when freeze ends, full spawn interval is respected!
+        lastSpawnTime.current = now;
       }
 
       // Check Wave Completion
@@ -664,11 +667,17 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
 
         if (m.isPowerup) {
           const pulse = Math.sin(now / 220) * 0.45 + 0.55;
-          ctx.shadowColor = m.color;
+          ctx.shadowColor = isFrozen ? '#06b6d4' : m.color;
           ctx.shadowBlur = 18 + pulse * 18;
           ctx.fillStyle = '#0d1f14';
-          ctx.strokeStyle = m.color;
+          ctx.strokeStyle = isFrozen ? '#38bdf8' : m.color;
           ctx.lineWidth = 2.5;
+        } else if (isFrozen) {
+          ctx.shadowColor = '#06b6d4';
+          ctx.shadowBlur = isTarget ? 24 : 16;
+          ctx.fillStyle = isTarget ? '#083344' : '#0c4a6e';
+          ctx.strokeStyle = '#38bdf8';
+          ctx.lineWidth = isTarget ? 3 : 2;
         } else {
           ctx.shadowColor = isTarget ? '#22c55e' : m.color;
           ctx.shadowBlur = isTarget ? 22 : 12;
