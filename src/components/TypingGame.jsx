@@ -230,84 +230,97 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     const engine = engineState.current;
     let target = null;
 
+    // 1. Check current active target meteor
     if (engine.activeTargetId) {
-      target = engine.meteors.find(m => m.id === engine.activeTargetId);
+      const active = engine.meteors.find(m => m.id === engine.activeTargetId);
+      if (active && active.text[active.typedIndex] === typedChar) {
+        target = active;
+      } else if (active) {
+        // Abandon partially typed word if player switches target
+        active.typedIndex = 0;
+      }
     }
+
+    // 2. If active target didn't match, check all meteors for a valid start/next letter (prefer lowest)
     if (!target) {
-      const matching = engine.meteors.filter(m => m.text[m.typedIndex] === typedChar).sort((a, b) => b.y - a.y);
+      const matching = engine.meteors
+        .filter(m => m.text[m.typedIndex] === typedChar)
+        .sort((a, b) => b.y - a.y);
+
       if (matching.length > 0) {
         target = matching[0];
         engine.activeTargetId = target.id;
       }
     }
 
+    // 3. Process keypress outcome
     if (target) {
       lettersAttempted.current++;
-      if (target.text[target.typedIndex] === typedChar) {
-        lettersCorrect.current++;
-        target.typedIndex++;
-        soundFX.playTypePop();
+      lettersCorrect.current++;
+      target.typedIndex++;
+      soundFX.playTypePop();
 
-        const now = Date.now();
-        const inFever = feverExpiry.current > now;
-        const laserColor = inFever ? '#ec4899' : '#38bdf8';
-        engine.lasers.push({
-          x1: CANVAS_WIDTH / 2,
-          y1: CANVAS_HEIGHT - 20,
-          x2: target.x,
-          y2: target.y,
-          color: laserColor,
-          alpha: 1.0
-        });
+      const now = Date.now();
+      const inFever = feverExpiry.current > now;
+      const laserColor = inFever ? '#ec4899' : '#38bdf8';
+      engine.lasers.push({
+        x1: CANVAS_WIDTH / 2,
+        y1: CANVAS_HEIGHT - 20,
+        x2: target.x,
+        y2: target.y,
+        color: laserColor,
+        alpha: 1.0
+      });
 
-        if (target.typedIndex >= target.text.length) {
-          addParticles(target.x, target.y, target.color, 16);
-          soundFX.playPowerUp();
+      if (target.typedIndex >= target.text.length) {
+        addParticles(target.x, target.y, target.color, 16);
+        soundFX.playPowerUp();
 
-          if (target.isPowerup) applyPowerup(target.powerupId);
+        if (target.isPowerup) applyPowerup(target.powerupId);
 
-          engine.meteors = engine.meteors.filter(m => m.id !== target.id);
-          engine.activeTargetId = null;
-
-          wordsDestroyedInWave.current++;
-          setTotalWords(w => w + 1);
-          setWaveProgress(wordsDestroyedInWave.current);
-
-          setCombo(c => {
-            const nextCombo = c + 1;
-            const feverMultiplier = feverExpiry.current > Date.now() ? 3 : 1;
-            const pts = (target.text.length * 25 + nextCombo * 10) * scoreMultRef.current * feverMultiplier;
-            setScore(s => s + pts);
-
-            addFloater(
-              target.x,
-              target.y - 15,
-              `+${pts}${nextCombo > 3 ? ` (${nextCombo}x)` : ''}`,
-              inFever ? '#ec4899' : nextCombo > 5 ? '#f59e0b' : '#4ade80'
-            );
-
-            // Trigger Fever Mode on 7 Combo
-            if (nextCombo === 7 && feverExpiry.current <= Date.now()) {
-              triggerFeverMode();
-            }
-
-            // Spawn power-up word on 5 or 10 combo if no powerup is active
-            if ((nextCombo === 5 || nextCombo === 10) && !engine.pendingPowerup) {
-              engine.pendingPowerup = POWERUP_DEFS[Math.floor(Math.random() * POWERUP_DEFS.length)];
-            }
-
-            return nextCombo;
-          });
-        }
-      } else {
-        soundFX.playTypeMiss();
-        setCombo(0);
+        engine.meteors = engine.meteors.filter(m => m.id !== target.id);
         engine.activeTargetId = null;
+
+        wordsDestroyedInWave.current++;
+        setTotalWords(w => w + 1);
+        setWaveProgress(wordsDestroyedInWave.current);
+
+        setCombo(c => {
+          const nextCombo = c + 1;
+          const feverMultiplier = feverExpiry.current > Date.now() ? 3 : 1;
+          const pts = (target.text.length * 25 + nextCombo * 10) * scoreMultRef.current * feverMultiplier;
+          setScore(s => s + pts);
+
+          addFloater(
+            target.x,
+            target.y - 15,
+            `+${pts}${nextCombo > 3 ? ` (${nextCombo}x)` : ''}`,
+            inFever ? '#ec4899' : nextCombo > 5 ? '#f59e0b' : '#4ade80'
+          );
+
+          // Trigger Fever Mode on 7 Combo
+          if (nextCombo === 7 && feverExpiry.current <= Date.now()) {
+            triggerFeverMode();
+          }
+
+          // Spawn power-up word on 5 or 10 combo if no powerup is active
+          if ((nextCombo === 5 || nextCombo === 10) && !engine.pendingPowerup) {
+            engine.pendingPowerup = POWERUP_DEFS[Math.floor(Math.random() * POWERUP_DEFS.length)];
+          }
+
+          return nextCombo;
+        });
       }
-      setLiveAccuracy(Math.round((lettersCorrect.current / lettersAttempted.current) * 100));
     } else {
+      // Genuine Miss: typed character matched no meteor on screen
+      lettersAttempted.current++;
       soundFX.playTypeMiss();
       setCombo(0);
+      engine.activeTargetId = null;
+    }
+
+    if (lettersAttempted.current > 0) {
+      setLiveAccuracy(Math.round((lettersCorrect.current / lettersAttempted.current) * 100));
     }
   };
 
