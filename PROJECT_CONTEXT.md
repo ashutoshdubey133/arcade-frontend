@@ -17,9 +17,11 @@
 
 1. **`TypingGame.jsx` (Sky Letters: Type Defense)** [FEATURED GAME 🌟]:
    * Aesthetic mountain parallax landscape with glowing moon, twinkling stars, and laser cannon.
-   * **Wave Defense Progression**: Escalating waves, word-length balanced speed scaling (longer words fall slower), 7-combo Hyper Fever Mode (3x score), floating score text, and wave clear shield repairs (+15 HP).
+   * **Escalating Streak Progression**: 7x (3x Fever), 10x (+500 PTS & Repair), 15x (⚡ EMP Plasma Wave), 20x (👑 5x Godlike Fever + Full Repair), 30x+ (🏆 Legendary EMP Blast + 3,000 PTS).
    * **Strict Typing Only**: Direct meteor tap/click is disabled.
    * **Native Mobile Soft Keyboard**: Automatically focuses phone keyboard with `TAP TO OPEN PHONE KEYBOARD 📱` helper trigger.
+
+* **Mandatory Global Leaderboard Rule**: Every active game (`Sky Letters`, `Ping Pong`, `Breakout`, `Minesweeper`) MUST be present in `LeaderboardModal.jsx` filter tabs.
 
 2. **`PingPongGame.jsx`**:
    * Canvas 2D engine with AI (Easy, Medium, Hard, Impossible) and Local 2-Player modes.

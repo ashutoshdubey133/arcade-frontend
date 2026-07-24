@@ -61,9 +61,9 @@ export default function LeaderboardModal({ isOpen, onClose }) {
         </div>
 
         {/* Filters */}
-        <div className="p-4 bg-slate-900/50 border-b border-slate-800 flex items-center gap-2 text-xs">
+        <div className="p-4 bg-slate-900/50 border-b border-slate-800 flex items-center gap-2 text-xs flex-wrap">
           <span className="text-slate-400 font-semibold mr-1">Filter:</span>
-          {['All', 'Ping Pong', 'Snake', 'Breakout'].map((game) => (
+          {['All', 'Sky Letters', 'Ping Pong', 'Breakout', 'Minesweeper'].map((game) => (
             <button
               key={game}
               onClick={() => setSelectedGame(game)}

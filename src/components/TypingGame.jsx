@@ -297,7 +297,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
 
         setCombo(c => {
           const nextCombo = c + 1;
-          const feverMultiplier = feverExpiry.current > Date.now() ? 3 : 1;
+          const feverMultiplier = feverExpiry.current > Date.now() ? (nextCombo >= 20 ? 5 : 3) : 1;
           const pts = (target.text.length * 25 + nextCombo * 10) * scoreMultRef.current * feverMultiplier;
           setScore(s => s + pts);
 
@@ -308,13 +308,73 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
             inFever ? '#ec4899' : nextCombo > 5 ? '#f59e0b' : '#4ade80'
           );
 
-          // Trigger Fever Mode on 7 Combo
+          // Escalating Streak Milestones & Rewards:
+          // 7x: Hyper Fever (3x Score)
+          // 10x: Streak Boost +500 PTS + 15 Shield HP + Instant Powerup Spawn
+          // 15x: EMP Plasma Wave (clears lowest 3 meteors) + 1,000 PTS + 20 Shield HP
+          // 20x: Mega Godlike Fever (5x Score for 8s) + 2,500 PTS + Full Shield Repair
+          // 30x, 40x, 50x...: Legendary EMP Blast + 3,000 PTS + Full Shield Repair
           if (nextCombo === 7 && feverExpiry.current <= Date.now()) {
             triggerFeverMode();
-          }
-
-          // Spawn power-up word on 5 or 10 combo if no powerup is active
-          if ((nextCombo === 5 || nextCombo === 10) && !engine.pendingPowerup) {
+          } else if (nextCombo === 10) {
+            soundFX.playPowerUp();
+            confetti({ particleCount: 60, spread: 80, origin: { y: 0.5 } });
+            setHealth(h => Math.min(100, h + 15));
+            setScore(s => s + 500);
+            addFloater(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40, '🔥 10x STREAK BOOST! +500 PTS & REPAIR!', '#f59e0b');
+            if (!engine.pendingPowerup) {
+              engine.pendingPowerup = POWERUP_DEFS[Math.floor(Math.random() * POWERUP_DEFS.length)];
+            }
+          } else if (nextCombo === 15) {
+            soundFX.playPowerUp();
+            confetti({ particleCount: 90, spread: 100, origin: { y: 0.4 } });
+            setHealth(h => Math.min(100, h + 20));
+            setScore(s => s + 1000);
+            addFloater(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40, '⚡ 15x EMP PLASMA STORM! +1,000 PTS!', '#38bdf8');
+            
+            const lowestMeteors = [...engine.meteors].sort((a, b) => b.y - a.y).slice(0, 3);
+            lowestMeteors.forEach(m => {
+              addParticles(m.x, m.y, '#38bdf8', 20);
+              addFloater(m.x, m.y, 'EMP BLAST!', '#06b6d4');
+            });
+            const clearedIds = new Set(lowestMeteors.map(m => m.id));
+            engine.meteors = engine.meteors.filter(m => !clearedIds.has(m.id));
+            wordsDestroyedInWave.current += clearedIds.size;
+            setTotalWords(w => w + clearedIds.size);
+            setWaveProgress(wordsDestroyedInWave.current);
+            engine.activeTargetId = null;
+          } else if (nextCombo === 20) {
+            const nowTime = Date.now();
+            feverExpiry.current = nowTime + 8000;
+            setIsFever(true);
+            soundFX.playPowerUp();
+            confetti({ particleCount: 120, spread: 120, origin: { y: 0.3 } });
+            setHealth(100);
+            setScore(s => s + 2500);
+            addFloater(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40, '👑 20x GODLIKE STREAK! 5x FEVER + 2,500 PTS!', '#ec4899');
+            setActivePowerups(p => [
+              ...p.filter(x => x.id !== 'fever'),
+              { id: 'fever', badgeLabel: '👑 MEGA FEVER (5x)', color: '#a855f7', expiresAt: nowTime + 8000 }
+            ]);
+          } else if (nextCombo >= 30 && nextCombo % 10 === 0) {
+            soundFX.playPowerUp();
+            confetti({ particleCount: 150, spread: 140, origin: { y: 0.3 } });
+            setHealth(100);
+            setScore(s => s + 3000);
+            addFloater(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 40, `🏆 ${nextCombo}x LEGENDARY STREAK! +3,000 PTS!`, '#eab308');
+            
+            const lowestMeteors = [...engine.meteors].sort((a, b) => b.y - a.y).slice(0, 4);
+            lowestMeteors.forEach(m => {
+              addParticles(m.x, m.y, '#eab308', 20);
+              addFloater(m.x, m.y, 'EMP BLAST!', '#eab308');
+            });
+            const clearedIds = new Set(lowestMeteors.map(m => m.id));
+            engine.meteors = engine.meteors.filter(m => !clearedIds.has(m.id));
+            wordsDestroyedInWave.current += clearedIds.size;
+            setTotalWords(w => w + clearedIds.size);
+            setWaveProgress(wordsDestroyedInWave.current);
+            engine.activeTargetId = null;
+          } else if (nextCombo === 5 && !engine.pendingPowerup) {
             engine.pendingPowerup = POWERUP_DEFS[Math.floor(Math.random() * POWERUP_DEFS.length)];
           }
 
@@ -841,10 +901,12 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
               <p className="text-slate-400 text-xs sm:text-sm max-w-xs">Defend your base in progressive waves! Maintain combos to trigger Hyper Fever Mode.</p>
 
               <div className="w-full bg-slate-900/80 rounded-xl border border-slate-800 p-3 text-left">
-                <p className="text-[10px] font-bold text-purple-400 mb-2 uppercase tracking-widest">Powerup Words & Gamification</p>
+                <p className="text-[10px] font-bold text-purple-400 mb-2 uppercase tracking-widest">Escalating Streak Milestones & Powerups</p>
                 <div className="grid grid-cols-1 gap-1.5 text-xs text-slate-300">
-                  <div className="flex items-center gap-2"><Flame className="w-3.5 h-3.5 text-pink-400" /><strong className="text-pink-400">7x Combo:</strong> Triggers 6s Hyper Fever Mode (3x Score!)</div>
-                  <div className="flex items-center gap-2"><Award className="w-3.5 h-3.5 text-purple-400" /><strong className="text-purple-400">Wave Clears:</strong> Grants +15 Shield HP repair & bonus score</div>
+                  <div className="flex items-center gap-2"><Flame className="w-3.5 h-3.5 text-pink-400 shrink-0" /><strong className="text-pink-400">7x Streak:</strong> 6s 3x Hyper Fever Mode</div>
+                  <div className="flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /><strong className="text-amber-400">10x Streak:</strong> +500 PTS + 15 HP Repair & Powerup</div>
+                  <div className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" /><strong className="text-cyan-400">15x Streak:</strong> ⚡ EMP Plasma Wave + 1,000 PTS</div>
+                  <div className="flex items-center gap-2"><Award className="w-3.5 h-3.5 text-purple-400 shrink-0" /><strong className="text-purple-400">20x Streak:</strong> 👑 5x Godlike Fever + Full Repair</div>
                   {POWERUP_DEFS.map(pu => (
                     <div key={pu.id} className="flex items-center gap-2">
                       <span className="font-bold w-14 shrink-0" style={{ color: pu.color }}>{pu.label}</span>
