@@ -230,30 +230,39 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     const engine = engineState.current;
     let target = null;
 
-    // 1. Check current active target meteor
+    // 1. Check if current active target meteor matches the typed character at its current typedIndex
     if (engine.activeTargetId) {
       const active = engine.meteors.find(m => m.id === engine.activeTargetId);
       if (active && active.text[active.typedIndex] === typedChar) {
         target = active;
-      } else if (active) {
-        // Abandon partially typed word if player switches target
-        active.typedIndex = 0;
       }
     }
 
-    // 2. If active target didn't match, check all meteors for a valid start/next letter (prefer lowest)
+    // 2. If active target didn't match, check if typedChar matches any meteor on screen (prefer lowest)
     if (!target) {
       const matching = engine.meteors
-        .filter(m => m.text[m.typedIndex] === typedChar)
+        .filter(m => m.text[m.typedIndex] === typedChar || m.text[0] === typedChar)
         .sort((a, b) => b.y - a.y);
 
       if (matching.length > 0) {
-        target = matching[0];
-        engine.activeTargetId = target.id;
+        const selected = matching[0];
+        // If switching from another active target, reset old target's typedIndex
+        if (engine.activeTargetId && engine.activeTargetId !== selected.id) {
+          const prev = engine.meteors.find(m => m.id === engine.activeTargetId);
+          if (prev) prev.typedIndex = 0;
+        }
+
+        // If matching at text[0] due to a target switch, ensure typedIndex points to start
+        if (selected.text[selected.typedIndex] !== typedChar && selected.text[0] === typedChar) {
+          selected.typedIndex = 0;
+        }
+
+        target = selected;
+        engine.activeTargetId = selected.id;
       }
     }
 
-    // 3. Process keypress outcome
+    // 3. Process keypress result
     if (target) {
       lettersAttempted.current++;
       lettersCorrect.current++;
@@ -272,6 +281,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         alpha: 1.0
       });
 
+      // Word completed!
       if (target.typedIndex >= target.text.length) {
         addParticles(target.x, target.y, target.color, 16);
         soundFX.playPowerUp();
@@ -316,7 +326,6 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       lettersAttempted.current++;
       soundFX.playTypeMiss();
       setCombo(0);
-      engine.activeTargetId = null;
     }
 
     if (lettersAttempted.current > 0) {
@@ -330,11 +339,14 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       if (e.key.length !== 1) return;
       const c = e.key.toUpperCase();
       if (!/^[A-Z]$/.test(c)) return;
+
+      // Prevent default to avoid double-processing via mobileInputRef onChange on desktop!
+      e.preventDefault();
       processKeyPress(c);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [gameState]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [gameState]); // eslint-disable-line react-hooks/exhaustive-deps // eslint-disable-line react-hooks/exhaustive-deps
 
   const startWave = (waveNum) => {
     setWave(waveNum);
