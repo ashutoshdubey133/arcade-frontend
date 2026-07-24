@@ -63,8 +63,38 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   const canvasRef = useRef(null);
+  const mobileInputRef = useRef(null);
   const animationFrameRef = useRef(null);
   const lastSpawnTime = useRef(0);
+
+  // Focus native mobile keyboard on touch / click
+  const focusMobileKeyboard = () => {
+    if (gameState === 'playing' && mobileInputRef.current) {
+      mobileInputRef.current.focus();
+    }
+  };
+
+  // Auto-focus mobile keyboard when game starts
+  useEffect(() => {
+    if (gameState === 'playing') {
+      setTimeout(() => {
+        if (mobileInputRef.current) {
+          mobileInputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, [gameState]);
+
+  // Handle native mobile keyboard input
+  const handleMobileInputChange = (e) => {
+    const val = e.target.value;
+    if (!val) return;
+    const lastChar = val.slice(-1).toUpperCase();
+    if (/^[A-Z]$/.test(lastChar)) {
+      processKeyPress(lastChar);
+    }
+    e.target.value = '';
+  };
 
   // Engine State stored in Ref for 60FPS precision
   const engineState = useRef({
@@ -161,35 +191,6 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       soundFX.playTypeMiss();
       setCombo(0);
       engine.activeTargetId = null;
-    }
-  };
-
-  // Direct touch/click on canvas meteor to destroy
-  const handleCanvasClickOrTouch = (e) => {
-    if (gameState !== 'playing') return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-    const clickX = (clientX - rect.left) * (CANVAS_WIDTH / rect.width);
-    const clickY = (clientY - rect.top) * (CANVAS_HEIGHT / rect.height);
-
-    const engine = engineState.current;
-    
-    // Find meteor touched
-    for (let m of engine.meteors) {
-      const dist = Math.sqrt((clickX - m.x) ** 2 + (clickY - m.y) ** 2);
-      if (dist < 45) { // Touched meteor area
-        // Auto-type remaining characters for touch convenience!
-        const nextChar = m.text[m.typedIndex];
-        if (nextChar) {
-          processKeyPress(nextChar);
-        }
-        break;
-      }
     }
   };
 
@@ -627,9 +628,20 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          onClick={handleCanvasClickOrTouch}
-          onTouchStart={handleCanvasClickOrTouch}
+          onClick={focusMobileKeyboard}
+          onTouchStart={focusMobileKeyboard}
           className="block w-full h-auto cursor-pointer"
+        />
+
+        {/* Hidden Input to summon Native Soft Keyboard on Phones */}
+        <input
+          ref={mobileInputRef}
+          type="text"
+          onChange={handleMobileInputChange}
+          className="opacity-0 absolute top-0 left-0 w-1 h-1 pointer-events-none"
+          autoCapitalize="characters"
+          autoCorrect="off"
+          autoComplete="off"
         />
 
         {/* Start / Menu Overlay */}
@@ -716,50 +728,17 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
 
       </div>
 
-      {/* Interactive Mobile Touch Keyboard */}
+      {/* Mobile Keyboard Trigger Helper Button */}
       {gameState === 'playing' && (
-        <div className="w-full max-w-[800px] mt-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex flex-col gap-1.5 items-center backdrop-blur">
-          {/* Row 1 */}
-          <div className="flex gap-1 justify-center w-full">
-            {['Q','W','E','R','T','Y','U','I','O','P'].map(char => (
-              <button
-                key={char}
-                onClick={() => processKeyPress(char)}
-                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
-                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
-              >
-                {char}
-              </button>
-            ))}
-          </div>
-
-          {/* Row 2 */}
-          <div className="flex gap-1 justify-center w-full">
-            {['A','S','D','F','G','H','J','K','L'].map(char => (
-              <button
-                key={char}
-                onClick={() => processKeyPress(char)}
-                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
-                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
-              >
-                {char}
-              </button>
-            ))}
-          </div>
-
-          {/* Row 3 */}
-          <div className="flex gap-1 justify-center w-full">
-            {['Z','X','C','V','B','N','M'].map(char => (
-              <button
-                key={char}
-                onClick={() => processKeyPress(char)}
-                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
-                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
-              >
-                {char}
-              </button>
-            ))}
-          </div>
+        <div className="w-full max-w-[800px] mt-3">
+          <button
+            onClick={focusMobileKeyboard}
+            onTouchStart={(e) => { e.preventDefault(); focusMobileKeyboard(); }}
+            className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:from-purple-700 active:to-indigo-700 text-white font-bold rounded-xl text-sm border border-purple-400/40 shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 select-none"
+          >
+            <Keyboard className="w-5 h-5 text-cyan-300" />
+            TAP TO OPEN PHONE KEYBOARD 📱
+          </button>
         </div>
       )}
 
