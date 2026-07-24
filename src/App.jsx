@@ -35,6 +35,7 @@ export default function App() {
           isMuted={isMuted}
           onToggleMute={handleToggleMute}
           onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
+          currentView={currentView}
         />
 
         {/* Center Primary View */}

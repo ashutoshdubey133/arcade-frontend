@@ -1,12 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Trophy, Volume2, VolumeX, Gamepad2, Server, 
-  HelpCircle, Zap, Medal, Star, Flame, Sparkles
+  HelpCircle, Zap, Medal, Star, Flame, Sparkles, Clock
 } from 'lucide-react';
-import { checkBackendHealth } from '../utils/leaderboardApi';
+import { checkBackendHealth, getLeaderboard } from '../utils/leaderboardApi';
 
-export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
+const formatRelativeTime = (dateStr) => {
+  if (!dateStr) return '';
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now - date;
+  if (isNaN(diffMs) || diffMs < 0) return '';
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return 'Just now';
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHour < 24) return `${diffHour}h ago`;
+  if (diffDay < 7) return `${diffDay}d ago`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
+
+export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard, currentView }) {
   const [apiStatus, setApiStatus] = useState({ isOnline: false, url: '...', isChecking: true });
+  const [topChampions, setTopChampions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -16,11 +36,21 @@ export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
     return () => { mounted = false; };
   }, []);
 
-  const topPlayers = [
-    { rank: 1, name: 'CyberKnight', score: 15, game: 'Ping Pong', medal: '🥇' },
-    { rank: 2, name: 'PixelMaster', score: 450, game: 'Breakout', medal: '🥈' },
-    { rank: 3, name: 'NeonRider', score: 320, game: 'Minesweeper', medal: '🥉' },
-  ];
+  const loadTopChampions = async () => {
+    setLoading(true);
+    const data = await getLeaderboard();
+    if (data && Array.isArray(data)) {
+      const sorted = [...data].sort((a, b) => b.score - a.score).slice(0, 3);
+      setTopChampions(sorted);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadTopChampions();
+    const interval = setInterval(loadTopChampions, 15000);
+    return () => clearInterval(interval);
+  }, [currentView]);
 
   return (
     <aside className="hidden xl:flex flex-col w-72 shrink-0 space-y-5 p-4 sticky top-6 self-start">
@@ -71,23 +101,49 @@ export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
         </div>
 
         <div className="space-y-2.5">
-          {topPlayers.map((player) => (
-            <div
-              key={player.rank}
-              className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-base">{player.medal}</span>
-                <div>
-                  <div className="font-bold text-slate-200">{player.name}</div>
-                  <div className="text-[10px] text-cyan-400/80 font-mono">{player.game}</div>
-                </div>
-              </div>
-              <div className="font-mono font-bold text-yellow-400 text-sm">
-                {player.score}
-              </div>
+          {topChampions.length === 0 ? (
+            <div className="text-[11px] text-slate-500 text-center py-3">
+              {loading ? 'Loading champions...' : 'No scores yet'}
             </div>
-          ))}
+          ) : (
+            topChampions.map((player, idx) => {
+              const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉';
+              const relTime = formatRelativeTime(player.date);
+              return (
+                <div
+                  key={player.id || idx}
+                  className={`flex items-center justify-between p-2.5 rounded-xl border text-xs transition-all ${
+                    idx === 0
+                      ? 'bg-gradient-to-r from-yellow-500/10 to-amber-500/5 border-yellow-500/30'
+                      : idx === 1
+                      ? 'bg-slate-950/70 border-slate-700/60'
+                      : 'bg-slate-950/50 border-slate-800/80'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-base shrink-0">{medal}</span>
+                    <div className="truncate">
+                      <div className="font-bold text-slate-200 truncate">{player.playerName}</div>
+                      <div className="text-[10px] text-cyan-400/90 font-mono truncate flex items-center gap-1">
+                        <span>{player.game}</span>
+                        {relTime && (
+                          <>
+                            <span className="text-slate-600">•</span>
+                            <span className="text-slate-400 font-sans flex items-center gap-0.5">
+                              <Clock className="w-2.5 h-2.5 text-slate-500" />{relTime}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="font-mono font-bold text-yellow-400 text-xs shrink-0 pl-1">
+                    {player.score} pts
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 
