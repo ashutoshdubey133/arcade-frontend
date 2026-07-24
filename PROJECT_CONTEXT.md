@@ -15,26 +15,26 @@
 
 ## 🎮 Game Components Overview
 
-1. **`PingPongGame.jsx`**:
-   * Canvas 2D engine with AI (Easy, Medium, Hard, Impossible) and Local 2-Player modes.
-   * Floating Arcade Power-ups (Speed, Extend, Freeze, Multi-ball).
-   * Touch drag & on-screen D-Pad controls for mobile screens.
-
-2. **`BreakoutGame.jsx`**:
-   * Dynamic ball speed physics (starts at gentle `3.5` and accelerates on bounces/brick hits up to `10.0`).
-   * Power-ups (Paddle Extend, Laser Blaster, Multi-Ball, Extra Life).
-   * On-screen touch D-Pad and `🚀 LAUNCH/LASER` touch button.
-
-3. **`MinesweeperGame.jsx`**:
-   * Easy (`8x8`), Medium (`12x12`), Hard (`16x16`).
-   * 5-Step Interactive Guided Tutorial Mode with a 4x4 practice grid.
-   * Long-press touch hold (350ms) to flag cells and `Flag Mode: ON/OFF` toggle button.
-
-4. **`TypingGame.jsx` (Sky Letters: Type Defense)**:
+1. **`TypingGame.jsx` (Sky Letters: Type Defense)** [FEATURED GAME 🌟]:
    * Aesthetic mountain parallax landscape with glowing moon, twinkling stars, and laser cannon.
    * **Wave Defense Progression**: Escalating waves, word-length balanced speed scaling (longer words fall slower), 7-combo Hyper Fever Mode (3x score), floating score text, and wave clear shield repairs (+15 HP).
    * **Strict Typing Only**: Direct meteor tap/click is disabled.
    * **Native Mobile Soft Keyboard**: Automatically focuses phone keyboard with `TAP TO OPEN PHONE KEYBOARD 📱` helper trigger.
+
+2. **`PingPongGame.jsx`**:
+   * Canvas 2D engine with AI (Easy, Medium, Hard, Impossible) and Local 2-Player modes.
+   * Floating Arcade Power-ups (Speed, Extend, Freeze, Multi-ball).
+   * Touch drag & on-screen D-Pad controls for mobile screens.
+
+3. **`BreakoutGame.jsx`**:
+   * Dynamic ball speed physics (starts at gentle `3.5` and accelerates on bounces/brick hits up to `10.0`).
+   * Power-ups (Paddle Extend, Laser Blaster, Multi-Ball, Extra Life).
+   * On-screen touch D-Pad and `🚀 LAUNCH/LASER` touch button.
+
+4. **`MinesweeperGame.jsx`**:
+   * Easy (`8x8`), Medium (`12x12`), Hard (`16x16`).
+   * 5-Step Interactive Guided Tutorial Mode with a 4x4 practice grid.
+   * Long-press touch hold (350ms) to flag cells and `Flag Mode: ON/OFF` toggle button.
 
 ---
 

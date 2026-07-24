@@ -8,10 +8,10 @@ A modern, responsive retro-arcade web application featuring lightweight browser 
 ---
 
 ## 🎮 Included Games
-1. **🏓 Ping Pong Arcade** – Single Player AI (Easy, Medium, Hard, Impossible) & Local 2P VS Mode with Arcade Power-Ups, canvas touch drag, and D-Pad.
-2. **🧱 Breakout Brick Buster** – Dynamic ball speed acceleration, laser cannons, multi-ball drops, 3 challenge levels, and touch D-Pad.
-3. **💣 Minesweeper Retro** – Easy (`8x8`), Medium (`12x12`), Hard (`16x16`), 5-step interactive Guided Tutorial mode, and 350ms touch long-press flagging.
-4. **⌨️ Sky Letters: Type Defense** – Parallax mountain landscape aesthetic, laser cannon defense, **wave-based defense progression**, word-length balanced fall speed, 7-combo Hyper Fever Mode (3x score), floating score text, strict typing mode, and native phone soft keyboard auto-focus.
+1. **⌨️ Sky Letters: Type Defense** [FEATURED GAME 🌟] – Parallax mountain landscape aesthetic, laser cannon defense, **wave-based defense progression**, word-length balanced fall speed, 7-combo Hyper Fever Mode (3x score), floating score text, strict typing mode, and native phone soft keyboard auto-focus.
+2. **🏓 Ping Pong Arcade** – Single Player AI (Easy, Medium, Hard, Impossible) & Local 2P VS Mode with Arcade Power-Ups, canvas touch drag, and D-Pad.
+3. **🧱 Breakout Brick Buster** – Dynamic ball speed acceleration, laser cannons, multi-ball drops, 3 challenge levels, and touch D-Pad.
+4. **💣 Minesweeper Retro** – Easy (`8x8`), Medium (`12x12`), Hard (`16x16`), 5-step interactive Guided Tutorial mode, and 350ms touch long-press flagging.
 
 ---
 

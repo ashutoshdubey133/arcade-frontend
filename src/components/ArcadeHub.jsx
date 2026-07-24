@@ -8,30 +8,30 @@ import { soundFX } from '../utils/soundFX';
 export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, onToggleMute }) {
   const gamesList = [
     {
+      id: 'typing',
+      title: 'Sky Letters: Type Defense',
+      category: 'Skill / Speed',
+      description: 'Defend the mountain valley from falling meteor waves by typing matching characters to fire ground laser cannons! Features 7x Hyper Fever Mode, length-balanced fall speed, and power-up words.',
+      badge: 'FEATURED 🌟',
+      badgeColor: 'bg-purple-500 text-white font-bold',
+      active: true,
+      color: 'from-purple-500 to-pink-500',
+      icon: '⌨️',
+      players: '1 Player',
+      features: ['Wave Defense Engine', '7x Hyper Fever Mode (3x Score)', 'Length-Balanced Fall Speed', 'Mobile Soft Keyboard Support']
+    },
+    {
       id: 'ping-pong',
       title: 'Ping Pong Arcade',
       category: 'Retro Sports',
       description: 'Classic 2D table tennis featuring AI single-player mode, 2-player local multiplayer, floating power-ups, and particle trail FX.',
-      badge: 'FEATURED',
-      badgeColor: 'bg-cyan-500 text-slate-950',
+      badge: 'POPULAR',
+      badgeColor: 'bg-cyan-500 text-slate-950 font-bold',
       active: true,
       color: 'from-cyan-500 to-emerald-500',
       icon: '🏓',
       players: '1 - 2 Players',
       features: ['AI Difficulty Modes', 'Local 2P VS', 'Arcade Power-Ups', 'Synthesizer Audio']
-    },
-    {
-      id: 'snake',
-      title: 'Snake Neon Edition',
-      category: 'Classic Arcade',
-      description: 'Navigate the glowing neon grid, eat power apples, avoid wall hits, and achieve the longest tail length.',
-      badge: 'NEXT UP',
-      badgeColor: 'bg-purple-500 text-white',
-      active: false,
-      color: 'from-purple-500 to-pink-500',
-      icon: '🐍',
-      players: '1 Player',
-      features: ['Speed Levels', 'Special Golden Apples', 'Neon Glow Styling']
     },
     {
       id: 'breakout',
@@ -60,17 +60,17 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
       features: ['Interactive Tutorial Mode', 'Easy / Medium / Hard Levels', 'Touch / Mobile Flagging', 'Global High Scores']
     },
     {
-      id: 'typing',
-      title: 'Sky Letters: Type Defense',
-      category: 'Skill / Speed',
-      description: 'Defend the aesthetic mountain valley from falling letter meteors by typing characters on your keyboard before impact!',
-      badge: 'NEW GAME',
-      badgeColor: 'bg-purple-500 text-white font-bold',
-      active: true,
+      id: 'snake',
+      title: 'Snake Neon Edition',
+      category: 'Classic Arcade',
+      description: 'Navigate the glowing neon grid, eat power apples, avoid wall hits, and achieve the longest tail length.',
+      badge: 'NEXT UP',
+      badgeColor: 'bg-purple-500 text-white',
+      active: false,
       color: 'from-purple-500 to-pink-500',
-      icon: '⌨️',
+      icon: '🐍',
       players: '1 Player',
-      features: ['Mountain Parallax Aesthetic', 'Laser Cannon Defense', 'Single & Multi-Letter Levels', 'Accuracy & Combo Multiplier']
+      features: ['Speed Levels', 'Special Golden Apples', 'Neon Glow Styling']
     },
     {
       id: 'space-invaders',
@@ -92,12 +92,12 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
       {/* Top Bar */}
       <header className="flex flex-col md:flex-row items-center justify-between gap-4 mb-10 pb-6 border-b border-slate-800/80">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-2xl shadow-lg shadow-cyan-500/20">
+          <div className="p-3 bg-gradient-to-br from-purple-500 via-pink-500 to-cyan-500 rounded-2xl shadow-lg shadow-purple-500/20">
             <Gamepad2 className="w-8 h-8 text-slate-950" />
           </div>
           <div>
             <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-              NEON ARCADE <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 font-mono">v1.0</span>
+              NEON ARCADE <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-mono">v1.0</span>
             </h1>
             <p className="text-xs text-slate-400">Lightweight, instant-play browser games</p>
           </div>
@@ -121,55 +121,55 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
         </div>
       </header>
 
-      {/* Hero Showcase Card */}
-      <div className="relative mb-12 rounded-3xl overflow-hidden border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900/90 to-cyan-950/40 p-8 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Showcase Card - Featured Game #1 */}
+      <div className="relative mb-12 rounded-3xl overflow-hidden border border-slate-800 bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 p-8 shadow-2xl">
+        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-semibold mb-4">
               <Sparkles className="w-3.5 h-3.5" /> Featured Game #1
             </div>
 
             <h2 className="text-4xl font-extrabold text-white mb-3 tracking-tight">
-              PING PONG ARCADE
+              SKY LETTERS: TYPE DEFENSE
             </h2>
 
             <p className="text-slate-300 text-sm mb-6 leading-relaxed">
-              Experience the classic table tennis game reborn with high-velocity physics, single-player AI mode, 2-player local multiplayer, floating power-ups, and synthesizer audio.
+              Defend the mountain valley from falling meteor waves! Type matching letters to fire ground laser cannons, build streaks to activate 7x Hyper Fever Mode (3x Score!), and collect power-up words.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 mb-8 text-xs text-slate-300">
               <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-yellow-400" /> Power-Ups Mode
+                <Zap className="w-3.5 h-3.5 text-purple-400" /> Wave Defense Engine
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 flex items-center gap-1.5">
-                <Flame className="w-3.5 h-3.5 text-red-400" /> Single & 2-Player
+                <Flame className="w-3.5 h-3.5 text-pink-400" /> 7x Hyper Fever (3x Score)
               </span>
               <span className="px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700/80 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-emerald-400" /> Smart AI Engine
+                <Shield className="w-3.5 h-3.5 text-cyan-400" /> Length-Balanced Speed
               </span>
             </div>
 
             <button
-              onClick={() => onSelectGame('ping-pong')}
-              className="px-8 py-3.5 bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-cyan-500/25 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 text-base"
+              onClick={() => onSelectGame('typing')}
+              className="px-8 py-3.5 bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-400 hover:to-cyan-300 text-slate-950 font-extrabold rounded-2xl shadow-xl shadow-purple-500/25 flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 text-base"
             >
-              <Play className="w-5 h-5 fill-current" /> PLAY PING PONG NOW
+              <Play className="w-5 h-5 fill-current" /> PLAY SKY LETTERS NOW
             </button>
           </div>
 
           <div className="lg:col-span-5 flex justify-center">
             <div 
-              onClick={() => onSelectGame('ping-pong')}
+              onClick={() => onSelectGame('typing')}
               className="group relative w-full aspect-video bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl cursor-pointer arcade-card-glow flex flex-col items-center justify-center p-6 text-center"
             >
               <div className="text-6xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
-                🏓
+                ⌨️
               </div>
-              <div className="text-lg font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">
-                Start Match
+              <div className="text-lg font-bold text-slate-100 group-hover:text-purple-400 transition-colors">
+                Start Defense Run
               </div>
               <p className="text-xs text-slate-500 mt-1">Click to launch Canvas Engine</p>
             </div>
