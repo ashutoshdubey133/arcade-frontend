@@ -696,7 +696,7 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
       </div>
 
       {/* Main Canvas Viewport */}
-      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-purple-950/40 bg-slate-950 w-full max-w-[800px]">
+      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-purple-950/40 bg-slate-950 w-full max-w-[800px] min-h-[420px] flex items-center justify-center">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
@@ -709,28 +709,30 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
 
         {/* Menu Overlay */}
         {gameState === 'menu' && (
-          <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
-            <Sparkles className="w-10 h-10 text-amber-400 mb-2 animate-bounce" />
-            <h1 className="text-4xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-pink-500 to-purple-500 neon-title mb-2">
-              BREAKOUT BRICK BUSTER
-            </h1>
-            <p className="text-slate-400 text-sm mb-6 max-w-md">
-              Smash brick layers, catch lasers, extra balls, and paddle extensions using Left/Right arrows or mouse movement!
-            </p>
+          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 text-center overflow-y-auto z-30">
+            <div className="w-full max-w-sm mx-auto flex flex-col items-center">
+              <Sparkles className="w-8 h-8 text-amber-400 mb-1 animate-bounce" />
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-pink-500 to-purple-500 neon-title mb-1">
+                BREAKOUT BRICK BUSTER
+              </h1>
+              <p className="text-slate-400 text-xs sm:text-sm mb-4 max-w-md">
+                Smash brick layers with paddle movement, touch drag, lasers, and multi-balls!
+              </p>
 
-            <div className="mb-6 w-full max-w-xs text-left">
-              <label className="text-slate-400 text-xs mb-1 block font-semibold">Player Name</label>
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value || 'Player 1')}
-                className="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-amber-500"
-              />
+              <div className="mb-4 w-full text-left bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                <label className="text-slate-400 text-xs mb-1 block font-semibold">Player Name</label>
+                <input
+                  type="text"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value || 'Player 1')}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-amber-500"
+                />
+              </div>
             </div>
 
             <button
               onClick={startGame}
-              className="px-8 py-3 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-amber-500/30 text-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-2"
+              className="w-full max-w-sm py-3 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-amber-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2 my-1 shrink-0"
             >
               <Play className="w-5 h-5 fill-current" /> START GAME
             </button>
