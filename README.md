@@ -1,14 +1,17 @@
 # 🕹️ Neon Arcade - Frontend Web Application (React + Vite)
 
-A modern, responsive retro-arcade web application featuring lightweight browser games, Web Audio API synthesizer sound effects, and desktop sidebars.
+> 🤖 **NOTE FOR AI AGENTS**:
+> Please refer to [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) for full architectural specs. Whenever you make code modifications in this repository, **you MUST update `PROJECT_CONTEXT.md` and this `README.md`** to keep documentation completely up to date.
+
+A modern, responsive retro-arcade web application featuring lightweight browser games, Web Audio API synthesizer sound effects, desktop sidebars, and full mobile touch controls.
 
 ---
 
 ## 🎮 Included Games
-1. **🏓 Ping Pong Arcade** – Single Player AI (Easy, Medium, Hard, Impossible) & Local 2P VS Mode with Arcade Power-Ups.
-2. **🧱 Breakout Brick Buster** – Dynamic ball speed acceleration, laser cannons, multi-ball drops, and 3 challenge levels.
-3. **💣 Minesweeper Retro** – Easy (`8x8`), Medium (`12x12`), Hard (`16x16`), plus a 5-step interactive Guided Tutorial mode.
-4. **⌨️ Sky Letters: Type Defense** – Parallax mountain aesthetic, laser cannon defense, and 4 falling letter/word levels.
+1. **🏓 Ping Pong Arcade** – Single Player AI (Easy, Medium, Hard, Impossible) & Local 2P VS Mode with Arcade Power-Ups, canvas touch drag, and D-Pad.
+2. **🧱 Breakout Brick Buster** – Dynamic ball speed acceleration, laser cannons, multi-ball drops, 3 challenge levels, and touch D-Pad.
+3. **💣 Minesweeper Retro** – Easy (`8x8`), Medium (`12x12`), Hard (`16x16`), 5-step interactive Guided Tutorial mode, and 350ms touch long-press flagging.
+4. **⌨️ Sky Letters: Type Defense** – Parallax mountain landscape aesthetic, laser cannon defense, **infinite procedurally generated levels**, strict typing mode, and native phone soft keyboard auto-focus.
 
 ---
 
