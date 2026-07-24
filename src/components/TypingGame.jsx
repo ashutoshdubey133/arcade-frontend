@@ -546,7 +546,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [gameState, levelIdx, clearedCount]);
+  }, [gameState, levelNumber, clearedCount]);
 
   const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 100;
   const currentConfig = getProceduralLevelConfig(levelNumber);
