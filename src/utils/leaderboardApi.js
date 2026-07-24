@@ -82,3 +82,19 @@ export const checkBackendHealth = async () => {
   }
   return { isOnline: false, url: 'LocalStorage', label: 'LocalStorage (Offline Mode)' };
 };
+
+// Auto-Save helper for mid-game leaving, switching games, or page refresh/unload
+export const autoSaveScore = async (scoreEntry) => {
+  if (!scoreEntry || !scoreEntry.score || scoreEntry.score <= 0) return null;
+  
+  try {
+    if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(scoreEntry)], { type: 'application/json' });
+      navigator.sendBeacon(`${API_BASE_URL}/scores`, blob);
+    }
+  } catch (e) {
+    // Ignore error
+  }
+
+  return await saveScore(scoreEntry);
+};

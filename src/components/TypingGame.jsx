@@ -795,8 +795,46 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     };
   }, [gameState, wave]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const latestScoreRef = useRef({ score: 0, playerName, wave: 1, survivalTime: 0, totalWords: 0, liveAccuracy: 100, submitted: false });
+
+  useEffect(() => {
+    latestScoreRef.current.score = score;
+    latestScoreRef.current.playerName = playerName;
+    latestScoreRef.current.wave = wave;
+    latestScoreRef.current.survivalTime = survivalTime;
+    latestScoreRef.current.totalWords = totalWords;
+    latestScoreRef.current.liveAccuracy = liveAccuracy;
+  }, [score, playerName, wave, survivalTime, totalWords, liveAccuracy]);
+
+  useEffect(() => {
+    const autoSaveProgress = () => {
+      const { score: s, playerName: p, wave: w, survivalTime: st, totalWords: tw, liveAccuracy: acc, submitted } = latestScoreRef.current;
+      if (s > 0 && !submitted && onSaveScore) {
+        latestScoreRef.current.submitted = true;
+        onSaveScore({
+          playerName: p || 'Player 1',
+          game: 'Sky Letters',
+          score: s,
+          mode: `Wave ${w} | ${st}s | ${tw} words | ${acc}% acc (Auto-Saved)`,
+          date: new Date().toISOString()
+        });
+      }
+    };
+
+    const handleUnload = () => autoSaveProgress();
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+      autoSaveProgress();
+    };
+  }, [onSaveScore]);
+
   const handleSubmitScore = () => {
-    if (!scoreSubmitted && onSaveScore) {
+    if (!latestScoreRef.current.submitted && onSaveScore) {
+      latestScoreRef.current.submitted = true;
       onSaveScore({
         playerName: playerName || 'Player 1',
         game: 'Sky Letters',

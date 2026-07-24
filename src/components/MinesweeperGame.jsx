@@ -305,10 +305,56 @@ export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
     }
   };
 
+  const latestScoreRef = useRef({ score: 0, playerName, difficulty: 'medium', submitted: false });
+
+  useEffect(() => {
+    let currentScore = 0;
+    if (grid && grid.length > 0) {
+      let revealedCount = 0;
+      grid.forEach(row => row.forEach(cell => { if (cell.revealed && !cell.isMine) revealedCount++; }));
+      const diffMultiplier = difficulty === 'hard' ? 3 : difficulty === 'medium' ? 2 : 1;
+      currentScore = revealedCount * 25 * diffMultiplier;
+    }
+    if (gameStatus === 'won') {
+      const timeBonus = Math.max(0, 1000 - timer * 5);
+      const diffMultiplier = difficulty === 'hard' ? 3 : difficulty === 'medium' ? 2 : 1;
+      currentScore = (100 * diffMultiplier) + timeBonus;
+    }
+    latestScoreRef.current.score = currentScore;
+    latestScoreRef.current.playerName = playerName;
+    latestScoreRef.current.difficulty = difficulty;
+  }, [grid, timer, gameStatus, playerName, difficulty]);
+
+  useEffect(() => {
+    const autoSaveProgress = () => {
+      const { score: s, playerName: p, difficulty: diff, submitted } = latestScoreRef.current;
+      if (s > 0 && !submitted && onSaveScore) {
+        latestScoreRef.current.submitted = true;
+        onSaveScore({
+          playerName: p || 'Player 1',
+          game: 'Minesweeper',
+          score: s,
+          mode: `${diff} (Auto-Saved)`,
+          date: new Date().toISOString()
+        });
+      }
+    };
+
+    const handleUnload = () => autoSaveProgress();
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+      autoSaveProgress();
+    };
+  }, [onSaveScore]);
+
   // Save Score
   const handleSubmitScore = () => {
-    if (!scoreSubmitted && onSaveScore) {
-      // Score calculation based on time and difficulty
+    if (!latestScoreRef.current.submitted && onSaveScore) {
+      latestScoreRef.current.submitted = true;
       const timeBonus = Math.max(0, 1000 - timer * 5);
       const diffMultiplier = difficulty === 'hard' ? 3 : difficulty === 'medium' ? 2 : 1;
       const finalScore = (100 * diffMultiplier) + timeBonus;

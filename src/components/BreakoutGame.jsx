@@ -597,8 +597,43 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
     setGameState('playing');
   };
 
+  const latestScoreRef = useRef({ score: 0, playerName, level: 1, submitted: false });
+
+  useEffect(() => {
+    latestScoreRef.current.score = score;
+    latestScoreRef.current.playerName = playerName;
+    latestScoreRef.current.level = level;
+  }, [score, playerName, level]);
+
+  useEffect(() => {
+    const autoSaveProgress = () => {
+      const { score: s, playerName: p, level: lvl, submitted } = latestScoreRef.current;
+      if (s > 0 && !submitted && onSaveScore) {
+        latestScoreRef.current.submitted = true;
+        onSaveScore({
+          playerName: p || 'Player 1',
+          game: 'Breakout',
+          score: s,
+          mode: `Level ${lvl} (Auto-Saved)`,
+          date: new Date().toISOString()
+        });
+      }
+    };
+
+    const handleUnload = () => autoSaveProgress();
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+      autoSaveProgress();
+    };
+  }, [onSaveScore]);
+
   const handleSubmitScore = () => {
-    if (!scoreSubmitted && onSaveScore) {
+    if (!latestScoreRef.current.submitted && onSaveScore) {
+      latestScoreRef.current.submitted = true;
       onSaveScore({
         playerName: playerName || 'Player 1',
         game: 'Breakout',

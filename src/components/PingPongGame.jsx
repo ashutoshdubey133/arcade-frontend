@@ -505,9 +505,45 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
     }
   };
 
+  const latestScoreRef = useRef({ score: 0, playerName, gameMode: 'single', difficulty: 'medium', submitted: false });
+
+  useEffect(() => {
+    latestScoreRef.current.score = score.p1;
+    latestScoreRef.current.playerName = playerName;
+    latestScoreRef.current.gameMode = gameMode;
+    latestScoreRef.current.difficulty = difficulty;
+  }, [score.p1, playerName, gameMode, difficulty]);
+
+  useEffect(() => {
+    const autoSaveProgress = () => {
+      const { score: s, playerName: p, gameMode: gm, difficulty: diff, submitted } = latestScoreRef.current;
+      if (s > 0 && !submitted && onSaveScore) {
+        latestScoreRef.current.submitted = true;
+        onSaveScore({
+          playerName: p || 'Player 1',
+          game: 'Ping Pong',
+          score: s,
+          mode: `${gm} (${diff}) (Auto-Saved)`,
+          date: new Date().toISOString()
+        });
+      }
+    };
+
+    const handleUnload = () => autoSaveProgress();
+    window.addEventListener('beforeunload', handleUnload);
+    window.addEventListener('pagehide', handleUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+      window.removeEventListener('pagehide', handleUnload);
+      autoSaveProgress();
+    };
+  }, [onSaveScore]);
+
   // Submit Score Handler
   const handleSubmitScore = () => {
-    if (!scoreSubmitted && onSaveScore) {
+    if (!latestScoreRef.current.submitted && onSaveScore) {
+      latestScoreRef.current.submitted = true;
       onSaveScore({
         playerName: playerName || 'Player 1',
         game: 'Ping Pong',
