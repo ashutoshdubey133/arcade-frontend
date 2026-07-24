@@ -62,3 +62,23 @@ export const saveScore = async (scoreEntry) => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
   return newEntry;
 };
+
+export const checkBackendHealth = async () => {
+  try {
+    const healthUrl = API_BASE_URL.replace(/\/api\/?$/, '') || API_BASE_URL;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(healthUrl, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      return { isOnline: true, url: API_BASE_URL, label: 'Render REST API Live' };
+    }
+  } catch (err) {
+    console.warn("Backend health check offline:", err.message);
+  }
+  return { isOnline: false, url: 'LocalStorage', label: 'LocalStorage (Offline Mode)' };
+};

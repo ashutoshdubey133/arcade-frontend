@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Trophy, Volume2, VolumeX, Gamepad2, Server, 
   HelpCircle, Zap, Medal, Star, Flame, Sparkles
 } from 'lucide-react';
+import { checkBackendHealth } from '../utils/leaderboardApi';
 
 export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
+  const [apiStatus, setApiStatus] = useState({ isOnline: false, url: '...', isChecking: true });
+
+  useEffect(() => {
+    let mounted = true;
+    checkBackendHealth().then(status => {
+      if (mounted) setApiStatus({ ...status, isChecking: false });
+    });
+    return () => { mounted = false; };
+  }, []);
+
   const topPlayers = [
     { rank: 1, name: 'CyberKnight', score: 15, game: 'Ping Pong', medal: '🥇' },
     { rank: 2, name: 'PixelMaster', score: 450, game: 'Breakout', medal: '🥈' },
@@ -80,16 +91,20 @@ export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
         </div>
       </div>
 
-      {/* Backend Status Widget */}
+      {/* Dynamic Backend Status Widget */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur text-xs">
         <div className="flex items-center gap-2 text-slate-300 font-bold mb-2">
-          <Server className="w-4 h-4 text-emerald-400" /> Backend Status
+          <Server className={`w-4 h-4 ${apiStatus.isOnline ? 'text-emerald-400' : 'text-amber-400'}`} /> Backend Status
         </div>
         <div className="flex items-center gap-2 bg-slate-950/80 p-2 rounded-xl border border-slate-800">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-          <div className="text-[11px]">
-            <div className="font-semibold text-slate-200">Node.js Express API</div>
-            <div className="text-[10px] text-slate-500 font-mono">http://localhost:8080</div>
+          <span className={`w-2.5 h-2.5 rounded-full ${apiStatus.isChecking ? 'bg-cyan-400 animate-ping' : apiStatus.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+          <div className="text-[11px] overflow-hidden">
+            <div className="font-semibold text-slate-200">
+              {apiStatus.isChecking ? 'Pinging REST API...' : apiStatus.isOnline ? 'Render REST API (Live)' : 'LocalStorage (Offline)'}
+            </div>
+            <div className="text-[10px] text-slate-400 font-mono truncate max-w-[180px]">
+              {apiStatus.url}
+            </div>
           </div>
         </div>
       </div>

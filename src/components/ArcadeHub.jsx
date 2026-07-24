@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Gamepad2, Play, Trophy, Sparkles, Volume2, VolumeX, 
   Flame, Zap, Shield, Compass, Star, ChevronRight
 } from 'lucide-react';
 import { soundFX } from '../utils/soundFX';
+import { checkBackendHealth } from '../utils/leaderboardApi';
 
 export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, onToggleMute }) {
+  const [serverStatus, setServerStatus] = useState({ isOnline: false, url: '...', isChecking: true });
+
+  useEffect(() => {
+    let mounted = true;
+    checkBackendHealth().then(status => {
+      if (mounted) setServerStatus({ ...status, isChecking: false });
+    });
+    return () => { mounted = false; };
+  }, []);
   const gamesList = [
     {
       id: 'typing',
@@ -256,8 +266,10 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
           Neon Arcade Platform • Built with React & Node.js Express
         </div>
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-slate-400">Render REST API Live (`https://arcade-backend-gtgl.onrender.com`)</span>
+          <span className={`w-2.5 h-2.5 rounded-full ${serverStatus.isChecking ? 'bg-cyan-400 animate-ping' : serverStatus.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+          <span className="text-slate-400 font-mono text-[11px]">
+            {serverStatus.isChecking ? 'Checking REST API status...' : serverStatus.isOnline ? `Render REST API Live (${serverStatus.url})` : 'LocalStorage (Offline Mode)'}
+          </span>
         </div>
       </footer>
     </div>
