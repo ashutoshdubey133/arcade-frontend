@@ -263,12 +263,12 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
       {/* Footer */}
       <footer className="pt-8 border-t border-slate-800/80 text-center text-xs text-slate-500 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
-          Neon Arcade Platform • Built with React & Node.js Express
+          Neon Arcade Platform • Built with React & Node.js
         </div>
         <div className="flex items-center gap-2">
           <span className={`w-2.5 h-2.5 rounded-full ${serverStatus.isChecking ? 'bg-cyan-400 animate-ping' : serverStatus.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
           <span className="text-slate-400 font-mono text-[11px]">
-            {serverStatus.isChecking ? 'Checking REST API status...' : serverStatus.isOnline ? `Render REST API Live (${serverStatus.url})` : 'LocalStorage (Offline Mode)'}
+            {serverStatus.isChecking ? 'Checking status...' : serverStatus.isOnline ? 'Global Leaderboard Online' : 'Offline Leaderboard (Local)'}
           </span>
         </div>
       </footer>

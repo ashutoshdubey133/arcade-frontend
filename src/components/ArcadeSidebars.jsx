@@ -91,19 +91,19 @@ export function LeftSidebar({ isMuted, onToggleMute, onOpenLeaderboard }) {
         </div>
       </div>
 
-      {/* Dynamic Backend Status Widget */}
+      {/* Leaderboard Status Widget */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur text-xs">
         <div className="flex items-center gap-2 text-slate-300 font-bold mb-2">
-          <Server className={`w-4 h-4 ${apiStatus.isOnline ? 'text-emerald-400' : 'text-amber-400'}`} /> Backend Status
+          <Server className={`w-4 h-4 ${apiStatus.isOnline ? 'text-emerald-400' : 'text-amber-400'}`} /> Leaderboard Status
         </div>
         <div className="flex items-center gap-2 bg-slate-950/80 p-2 rounded-xl border border-slate-800">
           <span className={`w-2.5 h-2.5 rounded-full ${apiStatus.isChecking ? 'bg-cyan-400 animate-ping' : apiStatus.isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
           <div className="text-[11px] overflow-hidden">
             <div className="font-semibold text-slate-200">
-              {apiStatus.isChecking ? 'Pinging REST API...' : apiStatus.isOnline ? 'Render REST API (Live)' : 'LocalStorage (Offline)'}
+              {apiStatus.isChecking ? 'Checking status...' : apiStatus.isOnline ? 'Global Leaderboard Online' : 'Offline Mode'}
             </div>
-            <div className="text-[10px] text-slate-400 font-mono truncate max-w-[180px]">
-              {apiStatus.url}
+            <div className="text-[10px] text-slate-500 font-mono">
+              {apiStatus.isChecking ? 'Connecting to network...' : apiStatus.isOnline ? 'Cloud Sync Active' : 'Local Storage Active'}
             </div>
           </div>
         </div>
