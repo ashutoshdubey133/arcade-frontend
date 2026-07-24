@@ -880,7 +880,8 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
 
       {/* Controls Footer */}
       <div className="w-full max-w-[800px] mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">
-        <div><strong className="text-cyan-400">Controls:</strong> Type matching letters to fire laser beams at falling meteors</div>
+        <div><strong className="text-cyan-400">Controls:</strong> Type matching letters to fire lasers</div>
+        <div><strong className="text-amber-400">Streaks (2x, 3x...):</strong> Clear consecutive words without typos or meteor hits</div>
         <div><strong className="text-pink-400">Fever Mode:</strong> Hit a 7x streak to trigger 3x score & hyper lasers!</div>
       </div>
     </div>
