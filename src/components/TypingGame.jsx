@@ -70,7 +70,17 @@ const pickWordForWave = (lengthWeights) => {
   return WORD_POOLS[2][Math.floor(Math.random() * WORD_POOLS[2].length)];
 };
 
-export default function TypingGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
+import PlayerHandleWidget from './PlayerHandleWidget';
+
+export default function TypingGame({ 
+  onBackToHub, 
+  onSaveScore, 
+  playerName = 'Player 1', 
+  isNameLocked = false, 
+  onUpdatePlayerName, 
+  onLockPlayerName, 
+  onResetPlayerName 
+}) {
   const [gameState,      setGameState]      = useState('menu'); // 'menu', 'playing', 'wave_clear', 'gameover'
   const [wave,           setWave]           = useState(1);
   const [waveProgress,   setWaveProgress]   = useState(0);
@@ -419,6 +429,7 @@ export default function TypingGame({ onBackToHub, onSaveScore, playerName = 'Pla
   };
 
   const startGame = () => {
+    if (onLockPlayerName) onLockPlayerName(playerName);
     setScore(0);
     setHealth(100);
     setCombo(0);
@@ -953,10 +964,14 @@ export default function TypingGame({ onBackToHub, onSaveScore, playerName = 'Pla
                 </div>
               </div>
 
-              <div className="w-full text-left bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                <label className="text-slate-400 text-xs mb-1 block font-semibold">Player Name</label>
-                <input type="text" value={playerName} onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-cyan-500" />
-              </div>
+              <PlayerHandleWidget
+                playerName={playerName}
+                isNameLocked={isNameLocked}
+                onUpdatePlayerName={onUpdatePlayerName}
+                onLockPlayerName={onLockPlayerName}
+                onResetPlayerName={onResetPlayerName}
+                accentColor="cyan"
+              />
             </div>
 
             <button onClick={startGame} className="w-full max-w-sm py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 mt-4 shrink-0">

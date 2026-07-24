@@ -20,7 +20,17 @@ const BRICK_PADDING = 8;
 const BRICK_OFFSET_TOP = 50;
 const BRICK_OFFSET_LEFT = 35;
 
-export default function BreakoutGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
+import PlayerHandleWidget from './PlayerHandleWidget';
+
+export default function BreakoutGame({ 
+  onBackToHub, 
+  onSaveScore, 
+  playerName = 'Player 1', 
+  isNameLocked = false, 
+  onUpdatePlayerName, 
+  onLockPlayerName, 
+  onResetPlayerName 
+}) {
   // Game state
   const [gameState, setGameState] = useState('menu'); // 'menu' | 'playing' | 'paused' | 'gameover' | 'levelcomplete'
   const [score, setScore] = useState(0);
@@ -174,6 +184,7 @@ export default function BreakoutGame({ onBackToHub, onSaveScore, playerName = 'P
 
   // Start new game
   const startGame = () => {
+    if (onLockPlayerName) onLockPlayerName(playerName);
     const engine = engineState.current;
     engine.paddleWidth = INITIAL_PADDLE_WIDTH;
     engine.paddleX = CANVAS_WIDTH / 2 - INITIAL_PADDLE_WIDTH / 2;
@@ -753,13 +764,14 @@ export default function BreakoutGame({ onBackToHub, onSaveScore, playerName = 'P
                 Smash brick layers with paddle movement, touch drag, lasers, and multi-balls!
               </p>
 
-              <div className="mb-4 w-full text-left bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                <label className="text-slate-400 text-xs mb-1 block font-semibold">Player Name</label>
-                <input
-                  type="text"
-                  value={playerName}
-                  onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-amber-500"
+              <div className="mb-4 w-full text-left">
+                <PlayerHandleWidget
+                  playerName={playerName}
+                  isNameLocked={isNameLocked}
+                  onUpdatePlayerName={onUpdatePlayerName}
+                  onLockPlayerName={onLockPlayerName}
+                  onResetPlayerName={onResetPlayerName}
+                  accentColor="amber"
                 />
               </div>
             </div>

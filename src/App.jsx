@@ -7,9 +7,10 @@ import TypingGame from './components/TypingGame';
 import LeaderboardModal from './components/LeaderboardModal';
 import { LeftSidebar, RightSidebar } from './components/ArcadeSidebars';
 import { saveScore } from './utils/leaderboardApi';
-import { soundFX } from './utils/soundFX';
+import CookieConsentBanner from './components/CookieConsentBanner';
 
 const PLAYER_NAME_KEY = 'arcade_player_name_v1';
+const PLAYER_LOCKED_KEY = 'arcade_name_locked_v1';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('hub'); // 'hub' | 'ping-pong' | 'breakout' | 'minesweeper' | 'typing'
@@ -23,10 +24,41 @@ export default function App() {
     }
   });
 
+  const [isNameLocked, setIsNameLocked] = useState(() => {
+    try {
+      return localStorage.getItem(PLAYER_LOCKED_KEY) === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
   const handleUpdatePlayerName = (name) => {
     setPlayerNameState(name);
     try {
       localStorage.setItem(PLAYER_NAME_KEY, name || 'Player 1');
+    } catch (e) {
+      // Ignore error
+    }
+  };
+
+  const handleLockPlayerName = (name) => {
+    const finalName = name || playerName || 'Player 1';
+    setPlayerNameState(finalName);
+    setIsNameLocked(true);
+    try {
+      localStorage.setItem(PLAYER_NAME_KEY, finalName);
+      localStorage.setItem(PLAYER_LOCKED_KEY, 'true');
+    } catch (e) {
+      // Ignore error
+    }
+  };
+
+  const handleResetPlayerName = () => {
+    setPlayerNameState('Player 1');
+    setIsNameLocked(false);
+    try {
+      localStorage.removeItem(PLAYER_NAME_KEY);
+      localStorage.removeItem(PLAYER_LOCKED_KEY);
     } catch (e) {
       // Ignore error
     }
@@ -70,7 +102,10 @@ export default function App() {
           {currentView === 'ping-pong' && (
             <PingPongGame
               playerName={playerName}
+              isNameLocked={isNameLocked}
               onUpdatePlayerName={handleUpdatePlayerName}
+              onLockPlayerName={handleLockPlayerName}
+              onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -79,7 +114,10 @@ export default function App() {
           {currentView === 'breakout' && (
             <BreakoutGame
               playerName={playerName}
+              isNameLocked={isNameLocked}
               onUpdatePlayerName={handleUpdatePlayerName}
+              onLockPlayerName={handleLockPlayerName}
+              onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -88,7 +126,10 @@ export default function App() {
           {currentView === 'minesweeper' && (
             <MinesweeperGame
               playerName={playerName}
+              isNameLocked={isNameLocked}
               onUpdatePlayerName={handleUpdatePlayerName}
+              onLockPlayerName={handleLockPlayerName}
+              onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -97,7 +138,10 @@ export default function App() {
           {currentView === 'typing' && (
             <TypingGame
               playerName={playerName}
+              isNameLocked={isNameLocked}
               onUpdatePlayerName={handleUpdatePlayerName}
+              onLockPlayerName={handleLockPlayerName}
+              onResetPlayerName={handleResetPlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -115,6 +159,11 @@ export default function App() {
       <LeaderboardModal
         isOpen={isLeaderboardOpen}
         onClose={() => setIsLeaderboardOpen(false)}
+      />
+
+      <CookieConsentBanner
+        playerName={playerName}
+        onResetProfile={handleResetPlayerName}
       />
     </div>
   );

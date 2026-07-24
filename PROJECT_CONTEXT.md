@@ -44,7 +44,7 @@
 * **`utils/soundFX.js`**: Web Audio API procedural synthesizer for zero-latency retro sound effects.
 * **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback and `autoSaveScore` helper.
 * **Universal Auto-Save Engine**: Monitors active game runs and automatically persists high scores if the player navigates away, switches games, or refreshes the page (`beforeunload`, `pagehide`).
-* **Persistent Player Name Engine (`arcade_player_name_v1`)**: Top-level state in `App.jsx` syncs player name across all game menus and persists in `localStorage`.
+* **Locked Profile Handle & Cookie Consent Banner (`PlayerHandleWidget.jsx`, `CookieConsentBanner.jsx`)**: Locks player name to browser profile so users are never prompted again. Requires explicitly clearing profile cookies to reset.
 
 ---
 

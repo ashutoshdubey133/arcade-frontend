@@ -14,7 +14,17 @@ const BALL_RADIUS = 8;
 const INITIAL_BALL_SPEED = 6;
 const MAX_BALL_SPEED = 14;
 
-export default function PingPongGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
+import PlayerHandleWidget from './PlayerHandleWidget';
+
+export default function PingPongGame({ 
+  onBackToHub, 
+  onSaveScore, 
+  playerName = 'Player 1', 
+  isNameLocked = false, 
+  onUpdatePlayerName, 
+  onLockPlayerName, 
+  onResetPlayerName 
+}) {
   // Game Configuration State
   const [gameMode, setGameMode] = useState('single'); // 'single' | 'twoPlayer'
   const [difficulty, setDifficulty] = useState('medium'); // 'easy' | 'medium' | 'hard' | 'impossible'
@@ -108,6 +118,7 @@ export default function PingPongGame({ onBackToHub, onSaveScore, playerName = 'P
 
   // Start New Game
   const startGame = () => {
+    if (onLockPlayerName) onLockPlayerName(playerName);
     const engine = engineState.current;
     engine.p1Y = CANVAS_HEIGHT / 2 - INITIAL_PADDLE_HEIGHT / 2;
     engine.p2Y = CANVAS_HEIGHT / 2 - INITIAL_PADDLE_HEIGHT / 2;
@@ -643,19 +654,20 @@ export default function PingPongGame({ onBackToHub, onSaveScore, playerName = 'P
                 Classic table tennis with power-ups, AI & 2-Player modes
               </p>
 
+              {/* Player Handle */}
+              <div className="w-full mb-3">
+                <PlayerHandleWidget
+                  playerName={playerName}
+                  isNameLocked={isNameLocked}
+                  onUpdatePlayerName={onUpdatePlayerName}
+                  onLockPlayerName={onLockPlayerName}
+                  onResetPlayerName={onResetPlayerName}
+                  accentColor="cyan"
+                />
+              </div>
+
               {/* Config Form */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full bg-slate-900/90 p-3 sm:p-4 rounded-xl border border-slate-800 text-left text-xs mb-3">
-                <div>
-                  <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
-                    <User className="w-3.5 h-3.5 text-cyan-400" /> Player Name
-                  </label>
-                  <input
-                    type="text"
-                    value={playerName}
-                    onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs sm:text-sm focus:outline-none focus:border-cyan-500"
-                  />
-                </div>
 
                 <div>
                   <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
