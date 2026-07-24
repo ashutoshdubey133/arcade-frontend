@@ -14,7 +14,7 @@ const BALL_RADIUS = 8;
 const INITIAL_BALL_SPEED = 6;
 const MAX_BALL_SPEED = 14;
 
-export default function PingPongGame({ onBackToHub, onSaveScore }) {
+export default function PingPongGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
   // Game Configuration State
   const [gameMode, setGameMode] = useState('single'); // 'single' | 'twoPlayer'
   const [difficulty, setDifficulty] = useState('medium'); // 'easy' | 'medium' | 'hard' | 'impossible'
@@ -26,7 +26,6 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
   const [score, setScore] = useState({ p1: 0, p2: 0 });
   const [winner, setWinner] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [playerName, setPlayerName] = useState('Player 1');
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   // Canvas & Engine References
@@ -653,7 +652,7 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
                   <input
                     type="text"
                     value={playerName}
-                    onChange={(e) => setPlayerName(e.target.value || 'Player 1')}
+                    onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
                     className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs sm:text-sm focus:outline-none focus:border-cyan-500"
                   />
                 </div>

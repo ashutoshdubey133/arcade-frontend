@@ -9,10 +9,28 @@ import { LeftSidebar, RightSidebar } from './components/ArcadeSidebars';
 import { saveScore } from './utils/leaderboardApi';
 import { soundFX } from './utils/soundFX';
 
+const PLAYER_NAME_KEY = 'arcade_player_name_v1';
+
 export default function App() {
   const [currentView, setCurrentView] = useState('hub'); // 'hub' | 'ping-pong' | 'breakout' | 'minesweeper' | 'typing'
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [playerName, setPlayerNameState] = useState(() => {
+    try {
+      return localStorage.getItem(PLAYER_NAME_KEY) || 'Player 1';
+    } catch (e) {
+      return 'Player 1';
+    }
+  });
+
+  const handleUpdatePlayerName = (name) => {
+    setPlayerNameState(name);
+    try {
+      localStorage.setItem(PLAYER_NAME_KEY, name || 'Player 1');
+    } catch (e) {
+      // Ignore error
+    }
+  };
 
   const handleToggleMute = () => {
     const muted = soundFX.toggleMute();
@@ -51,6 +69,8 @@ export default function App() {
 
           {currentView === 'ping-pong' && (
             <PingPongGame
+              playerName={playerName}
+              onUpdatePlayerName={handleUpdatePlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -58,6 +78,8 @@ export default function App() {
 
           {currentView === 'breakout' && (
             <BreakoutGame
+              playerName={playerName}
+              onUpdatePlayerName={handleUpdatePlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -65,6 +87,8 @@ export default function App() {
 
           {currentView === 'minesweeper' && (
             <MinesweeperGame
+              playerName={playerName}
+              onUpdatePlayerName={handleUpdatePlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />
@@ -72,6 +96,8 @@ export default function App() {
 
           {currentView === 'typing' && (
             <TypingGame
+              playerName={playerName}
+              onUpdatePlayerName={handleUpdatePlayerName}
               onBackToHub={() => setCurrentView('hub')}
               onSaveScore={handleSaveScore}
             />

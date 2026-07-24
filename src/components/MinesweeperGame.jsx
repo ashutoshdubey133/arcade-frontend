@@ -15,7 +15,7 @@ const DIFFICULTY_CONFIG = {
 // Fixed non-random layout for Tutorial Practice grid (4x4)
 const TUTORIAL_MINE_POSITIONS = [[0, 3], [3, 0], [3, 3]];
 
-export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
+export default function MinesweeperGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
   // Game Setup
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard' | 'tutorial'
   const [isTutorial, setIsTutorial] = useState(false);
@@ -29,7 +29,6 @@ export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
   const [flagsLeft, setFlagsLeft] = useState(10);
   const [timer, setTimer] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
-  const [playerName, setPlayerName] = useState('Player 1');
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   const timerRef = useRef(null);
@@ -394,7 +393,15 @@ export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
           <ArrowLeft className="w-4 h-4" /> Arcade Hub
         </button>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          <input
+            type="text"
+            value={playerName}
+            onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
+            placeholder="Player Name"
+            className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1 text-slate-100 text-xs w-28 focus:outline-none focus:border-cyan-500"
+          />
+
           <select
             value={isTutorial ? 'tutorial' : difficulty}
             onChange={(e) => {

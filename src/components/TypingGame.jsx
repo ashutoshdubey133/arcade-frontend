@@ -70,7 +70,7 @@ const pickWordForWave = (lengthWeights) => {
   return WORD_POOLS[2][Math.floor(Math.random() * WORD_POOLS[2].length)];
 };
 
-export default function TypingGame({ onBackToHub, onSaveScore }) {
+export default function TypingGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
   const [gameState,      setGameState]      = useState('menu'); // 'menu', 'playing', 'wave_clear', 'gameover'
   const [wave,           setWave]           = useState(1);
   const [waveProgress,   setWaveProgress]   = useState(0);
@@ -80,7 +80,6 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
   const [combo,          setCombo]          = useState(0);
   const [totalWords,     setTotalWords]     = useState(0);
   const [isMuted,        setIsMuted]        = useState(false);
-  const [playerName,     setPlayerName]     = useState('Player 1');
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
   const [activePowerups, setActivePowerups] = useState([]);
   const [survivalTime,   setSurvivalTime]   = useState(0);
@@ -956,7 +955,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
 
               <div className="w-full text-left bg-slate-900/90 p-3 rounded-xl border border-slate-800">
                 <label className="text-slate-400 text-xs mb-1 block font-semibold">Player Name</label>
-                <input type="text" value={playerName} onChange={(e) => setPlayerName(e.target.value || 'Player 1')} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-cyan-500" />
+                <input type="text" value={playerName} onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-cyan-500" />
               </div>
             </div>
 

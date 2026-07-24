@@ -20,14 +20,13 @@ const BRICK_PADDING = 8;
 const BRICK_OFFSET_TOP = 50;
 const BRICK_OFFSET_LEFT = 35;
 
-export default function BreakoutGame({ onBackToHub, onSaveScore }) {
+export default function BreakoutGame({ onBackToHub, onSaveScore, playerName = 'Player 1', onUpdatePlayerName }) {
   // Game state
   const [gameState, setGameState] = useState('menu'); // 'menu' | 'playing' | 'paused' | 'gameover' | 'levelcomplete'
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [level, setLevel] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
-  const [playerName, setPlayerName] = useState('Player 1');
   const [scoreSubmitted, setScoreSubmitted] = useState(false);
 
   // Canvas & Physics Refs
@@ -759,7 +758,7 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
                 <input
                   type="text"
                   value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value || 'Player 1')}
+                  onChange={(e) => onUpdatePlayerName && onUpdatePlayerName(e.target.value)}
                   className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:border-amber-500"
                 />
               </div>
