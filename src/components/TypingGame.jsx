@@ -9,51 +9,49 @@ import { soundFX } from '../utils/soundFX';
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 500;
 
-const LEVEL_CONFIGS = [
-  {
-    level: 1,
-    title: 'Level 1: Letter Rain',
-    wordLength: 1,
-    wordsToClear: 18,
-    fallSpeed: 1.0,
-    spawnInterval: 1400,
-    pool: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-  },
-  {
-    level: 2,
-    title: 'Level 2: Dual Combos',
-    wordLength: 2,
-    wordsToClear: 22,
-    fallSpeed: 1.3,
-    spawnInterval: 1200,
-    pool: ['GO','HI','ON','UP','NO','MY','BE','WE','AM','DO','ME','IT','SO','IN','AT','TO','HE','IS']
-  },
-  {
-    level: 3,
-    title: 'Level 3: Cosmic Defense',
-    wordLength: 4,
-    wordsToClear: 25,
-    fallSpeed: 1.6,
-    spawnInterval: 1100,
-    pool: ['NEON','PONG','ROCK','FIRE','MINT','STAR','MOON','GLOW','DARK','ZERO','FAST','WAVE','CITY','BOLD','JUMP']
-  },
-  {
-    level: 4,
-    title: 'Level 4: Hyper Meteor Storm',
-    wordLength: 5,
-    wordsToClear: 30,
-    fallSpeed: 2.0,
-    spawnInterval: 900,
-    pool: ['SPEED','PULSE','LASER','LIGHT','SHIELD','CYBER','ARCADE','MATRIX','PLANET','ORBIT','FUTURE','VALLEY','COMET']
-  }
-];
+// Dictionary pools by word length
+const WORD_POOLS = {
+  1: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+  2: ['GO','HI','ON','UP','NO','MY','BE','WE','AM','DO','ME','IT','SO','IN','AT','TO','HE','IS','OR','IF'],
+  3: ['SKY','SUN','RUN','FLY','RED','ICE','JET','TOP','WIN','BOX','GEM','ACE','FOX','KEY','RAY','ZIP'],
+  4: ['NEON','PONG','ROCK','FIRE','MINT','STAR','MOON','GLOW','DARK','ZERO','FAST','WAVE','CITY','BOLD','JUMP','CODE'],
+  5: ['SPEED','PULSE','LASER','LIGHT','SHIELD','CYBER','ARCADE','MATRIX','PLANET','ORBIT','FUTURE','VALLEY','COMET'],
+  6: ['GALAXY','ROCKET','SHADOW','SHINE','ACTION','DRAGON','HEROES','METEOR','ENERGY','PLAYER'],
+  7: ['DEFENSE','PHANTOM','INFINITY','THUNDER','CRYSTAL','SPECTRA','TACTICAL']
+};
+
+// Procedural Level Generator
+const getProceduralLevelConfig = (lvl) => {
+  const levelNumber = Math.max(1, lvl);
+  let wordLength = 1;
+  if (levelNumber === 2) wordLength = 2;
+  else if (levelNumber === 3) wordLength = 3;
+  else if (levelNumber >= 4 && levelNumber <= 6) wordLength = 4;
+  else if (levelNumber >= 7 && levelNumber <= 10) wordLength = 5;
+  else if (levelNumber >= 11 && levelNumber <= 15) wordLength = 6;
+  else if (levelNumber >= 16) wordLength = 7;
+
+  const pool = WORD_POOLS[wordLength] || WORD_POOLS[5];
+  const fallSpeed = Math.min(4.5, 0.9 + (levelNumber * 0.15));
+  const spawnInterval = Math.max(500, 1500 - (levelNumber * 45));
+  const wordsToClear = 12 + (levelNumber * 3);
+
+  return {
+    level: levelNumber,
+    title: `Level ${levelNumber}: Sky Wave`,
+    wordsToClear,
+    fallSpeed,
+    spawnInterval,
+    pool
+  };
+};
 
 export default function TypingGame({ onBackToHub, onSaveScore }) {
   // Game state
   const [gameState, setGameState] = useState('menu'); // 'menu' | 'playing' | 'paused' | 'gameover' | 'levelcomplete'
   const [score, setScore] = useState(0);
   const [health, setHealth] = useState(100);
-  const [levelIdx, setLevelIdx] = useState(0);
+  const [levelNumber, setLevelNumber] = useState(1);
   const [combo, setCombo] = useState(0);
   const [clearedCount, setClearedCount] = useState(0);
   const [totalTyped, setTypedTotal] = useState(0);
@@ -211,8 +209,8 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
   }, [gameState]);
 
   // Start / Restart Game
-  const startGame = (startLvl = 0) => {
-    setLevelIdx(startLvl);
+  const startGame = () => {
+    setLevelNumber(1);
     setScore(0);
     setHealth(100);
     setCombo(0);
@@ -232,11 +230,11 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     setGameState('playing');
   };
 
-  // Next level
+  // Next procedural level
   const handleNextLevel = () => {
-    const nextLvl = levelIdx + 1;
-    setLevelIdx(nextLvl);
+    setLevelNumber(l => l + 1);
     setClearedCount(0);
+    setHealth(h => Math.min(100, h + 25)); // Bonus +25 HP on level up!
 
     const engine = engineState.current;
     engine.meteors = [];
@@ -273,7 +271,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    const config = LEVEL_CONFIGS[levelIdx] || LEVEL_CONFIGS[0];
+    const config = getProceduralLevelConfig(levelNumber);
 
     const updateAndDraw = () => {
       const engine = engineState.current;
@@ -340,16 +338,11 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         }
       }
 
-      // Check Level Clear
+      // Check Level Clear (Infinite Procedural Progression)
       if (clearedCount >= config.wordsToClear) {
         soundFX.playGameOver(true);
         confetti({ particleCount: 90, spread: 70 });
-
-        if (levelIdx >= LEVEL_CONFIGS.length - 1) {
-          setGameState('gameover');
-        } else {
-          setGameState('levelcomplete');
-        }
+        setGameState('levelcomplete');
       }
 
       // 3. Render Canvas (With Parallax Mountains Aesthetic)
@@ -556,7 +549,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
   }, [gameState, levelIdx, clearedCount]);
 
   const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 100;
-  const currentConfig = LEVEL_CONFIGS[levelIdx] || LEVEL_CONFIGS[0];
+  const currentConfig = getProceduralLevelConfig(levelNumber);
 
   const handleSubmitScore = () => {
     if (!scoreSubmitted && onSaveScore) {
@@ -564,7 +557,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         playerName: playerName || 'Player 1',
         game: 'Sky Letters',
         score: score,
-        mode: `Level ${levelIdx + 1} (${accuracy}% Acc)`,
+        mode: `Level ${levelNumber} (${accuracy}% Acc)`,
         date: new Date().toISOString()
       });
       setScoreSubmitted(true);
@@ -680,15 +673,16 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         {gameState === 'levelcomplete' && (
           <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
             <Trophy className="w-12 h-12 text-yellow-400 mb-2 animate-bounce" />
-            <h2 className="text-3xl font-extrabold text-white mb-2">{currentConfig.title} CLEARED!</h2>
+            <h2 className="text-3xl font-extrabold text-white mb-1">LEVEL {levelNumber} CLEARED! 🎉</h2>
+            <p className="text-emerald-400 font-bold text-xs mb-2">+25 Shield HP Bonus Restored!</p>
             <p className="text-slate-400 mb-6 font-mono text-sm">
-              Score: {score} | Accuracy: {accuracy}%
+              Current Score: {score} | Accuracy: {accuracy}%
             </p>
             <button
               onClick={handleNextLevel}
-              className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-bold rounded-lg transition-all flex items-center gap-2"
+              className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 active:from-emerald-600 active:to-teal-500 text-slate-950 font-extrabold rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-2"
             >
-              <Play className="w-4 h-4 fill-current" /> NEXT LEVEL →
+              <Play className="w-5 h-5 fill-current" /> CONTINUE TO LEVEL {levelNumber + 1} →
             </button>
           </div>
         )}
@@ -696,10 +690,13 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         {/* Game Over Overlay */}
         {gameState === 'gameover' && (
           <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
-            <h2 className="text-3xl font-extrabold text-white mb-2">
-              {health <= 0 ? '💥 MOUNTAIN BASE DESTROYED' : '🎉 ALL LEVELS DEFENDED!'}
+            <h2 className="text-3xl font-extrabold text-red-500 mb-1">
+              💥 MOUNTAIN BASE DESTROYED
             </h2>
-            <p className="text-slate-400 mb-6 font-mono">
+            <p className="text-slate-300 font-bold text-sm mb-1">
+              Survived Up To Level {levelNumber}
+            </p>
+            <p className="text-slate-400 mb-6 font-mono text-xs">
               Final Score: {score} | Accuracy: {accuracy}%
             </p>
 
@@ -717,10 +714,10 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
               </button>
 
               <button
-                onClick={() => startGame(0)}
+                onClick={startGame}
                 className="px-6 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2"
               >
-                <RotateCcw className="w-4 h-4" /> Play Again
+                <RotateCcw className="w-4 h-4" /> Try Again
               </button>
             </div>
           </div>
