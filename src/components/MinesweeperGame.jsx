@@ -167,6 +167,23 @@ export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
     }
   };
 
+  // Long Press for mobile flagging
+  const touchTimerRef = useRef(null);
+
+  const handleTouchStart = (r, c) => {
+    touchTimerRef.current = setTimeout(() => {
+      handleCellRightClick(r, c, null);
+      touchTimerRef.current = null;
+    }, 350);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  };
+
   // Reveal Cell
   const handleCellClick = (r, c) => {
     if (gameStatus === 'won' || gameStatus === 'lost') return;
@@ -494,7 +511,9 @@ export default function MinesweeperGame({ onBackToHub, onSaveScore }) {
                   key={`${r}-${c}`}
                   onClick={() => handleCellClick(r, c)}
                   onContextMenu={(e) => handleCellRightClick(r, c, e)}
-                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-mono font-bold text-sm flex items-center justify-center transition-all ${
+                  onTouchStart={() => handleTouchStart(r, c)}
+                  onTouchEnd={handleTouchEnd}
+                  className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg font-mono font-bold text-xs sm:text-sm flex items-center justify-center transition-all ${
                     cell.revealed
                       ? cell.isMine
                         ? 'bg-red-600 text-white shadow-inner'

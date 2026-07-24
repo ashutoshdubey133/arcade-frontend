@@ -610,6 +610,49 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
     }
   };
 
+  const handleCanvasTouchMove = (e) => {
+    if (gameState !== 'playing') return;
+    if (e.touches && e.touches.length > 0) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const touchX = e.touches[0].clientX - rect.left;
+      const scaleX = CANVAS_WIDTH / rect.width;
+      const canvasX = touchX * scaleX;
+
+      engineState.current.paddleX = Math.max(
+        0, 
+        Math.min(CANVAS_WIDTH - engineState.current.paddleWidth, canvasX - engineState.current.paddleWidth / 2)
+      );
+    }
+  };
+
+  const handleLaunchOrLaser = () => {
+    const engine = engineState.current;
+    
+    // Launch attached balls
+    engine.balls.forEach(b => {
+      if (b.attached) {
+        b.attached = false;
+        b.vx = (Math.random() > 0.5 ? 1 : -1) * (INITIAL_BALL_SPEED * 0.7);
+        b.vy = -INITIAL_BALL_SPEED;
+      }
+    });
+
+    // Shoot laser if capability active
+    if (engine.hasLaserCapability && gameState === 'playing') {
+      soundFX.playLaser();
+      engine.lasers.push({
+        x: engine.paddleX + 15,
+        y: CANVAS_HEIGHT - PADDLE_HEIGHT - 10,
+        vy: -10
+      });
+      engine.lasers.push({
+        x: engine.paddleX + engine.paddleWidth - 15,
+        y: CANVAS_HEIGHT - PADDLE_HEIGHT - 10,
+        vy: -10
+      });
+    }
+  };
+
   const handleCanvasMouseMove = (e) => {
     if (gameState !== 'playing') return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -653,13 +696,15 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
       </div>
 
       {/* Main Canvas Viewport */}
-      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-purple-950/40 bg-slate-950">
+      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-purple-950/40 bg-slate-950 w-full max-w-[800px]">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
           onMouseMove={handleCanvasMouseMove}
-          className="block touch-none cursor-pointer"
+          onTouchStart={handleCanvasTouchMove}
+          onTouchMove={handleCanvasTouchMove}
+          className="block w-full h-auto touch-none cursor-pointer"
         />
 
         {/* Menu Overlay */}
@@ -736,6 +781,38 @@ export default function BreakoutGame({ onBackToHub, onSaveScore }) {
           </div>
         )}
       </div>
+
+      {/* Mobile Touch Controls D-Pad & Action Button */}
+      {gameState === 'playing' && (
+        <div className="w-full max-w-[800px] mt-3 flex items-center gap-3">
+          <button
+            onMouseDown={() => { keysPressed.current['ArrowLeft'] = true; }}
+            onMouseUp={() => { keysPressed.current['ArrowLeft'] = false; }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current['ArrowLeft'] = true; }}
+            onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['ArrowLeft'] = false; }}
+            className="flex-1 py-3 bg-cyan-600/80 active:bg-cyan-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-cyan-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+          >
+            ◀ LEFT
+          </button>
+
+          <button
+            onClick={handleLaunchOrLaser}
+            className="flex-[1.5] py-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-300 text-slate-950 font-extrabold rounded-xl text-sm select-none shadow-lg shadow-amber-500/20 border border-amber-400 active:scale-95 transition-transform flex items-center justify-center gap-1.5"
+          >
+            🚀 LAUNCH / LASER
+          </button>
+
+          <button
+            onMouseDown={() => { keysPressed.current['ArrowRight'] = true; }}
+            onMouseUp={() => { keysPressed.current['ArrowRight'] = false; }}
+            onTouchStart={(e) => { e.preventDefault(); keysPressed.current['ArrowRight'] = true; }}
+            onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['ArrowRight'] = false; }}
+            className="flex-1 py-3 bg-cyan-600/80 active:bg-cyan-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-cyan-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+          >
+            RIGHT ▶
+          </button>
+        </div>
+      )}
 
       {/* Control Instructions */}
       <div className="w-full max-w-[800px] mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">

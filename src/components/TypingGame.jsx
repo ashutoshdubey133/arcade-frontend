@@ -96,6 +96,103 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
     engineState.current.stars = stars;
   }, []);
 
+  // Core Key Processing Logic (used by Keyboard, Touch Screen, and On-Screen Keyboard)
+  const processKeyPress = (typedChar) => {
+    if (gameState !== 'playing') return;
+
+    setTypedTotal(t => t + 1);
+
+    const engine = engineState.current;
+    let target = null;
+
+    // 1. If currently targeting a meteor, continue typing that one
+    if (engine.activeTargetId) {
+      target = engine.meteors.find(m => m.id === engine.activeTargetId);
+    }
+
+    // 2. Otherwise find lowest meteor starting with typed character
+    if (!target) {
+      const matching = engine.meteors
+        .filter(m => m.text[m.typedIndex] === typedChar)
+        .sort((a, b) => b.y - a.y); // Lowest meteor on screen first
+
+      if (matching.length > 0) {
+        target = matching[0];
+        engine.activeTargetId = target.id;
+      }
+    }
+
+    // 3. Process key press against target
+    if (target && target.text[target.typedIndex] === typedChar) {
+      target.typedIndex++;
+      setCorrectTyped(c => c + 1);
+      soundFX.playTypePop();
+
+      // Fire Laser beam from ground cannon (bottom center) to meteor
+      engine.lasers.push({
+        x1: CANVAS_WIDTH / 2,
+        y1: CANVAS_HEIGHT - 20,
+        x2: target.x,
+        y2: target.y,
+        color: '#38bdf8',
+        alpha: 1.0
+      });
+
+      // If target completely typed!
+      if (target.typedIndex >= target.text.length) {
+        // Detonate meteor!
+        addParticles(target.x, target.y, target.color, 16);
+        soundFX.playPowerUp();
+
+        // Remove meteor
+        engine.meteors = engine.meteors.filter(m => m.id !== target.id);
+        engine.activeTargetId = null;
+
+        setCombo(c => {
+          const nextCombo = c + 1;
+          setScore(s => s + (target.text.length * 20) + (nextCombo * 5));
+          return nextCombo;
+        });
+
+        setClearedCount(cnt => cnt + 1);
+      }
+    } else {
+      // Missed key!
+      soundFX.playTypeMiss();
+      setCombo(0);
+      engine.activeTargetId = null;
+    }
+  };
+
+  // Direct touch/click on canvas meteor to destroy
+  const handleCanvasClickOrTouch = (e) => {
+    if (gameState !== 'playing') return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+    const clickX = (clientX - rect.left) * (CANVAS_WIDTH / rect.width);
+    const clickY = (clientY - rect.top) * (CANVAS_HEIGHT / rect.height);
+
+    const engine = engineState.current;
+    
+    // Find meteor touched
+    for (let m of engine.meteors) {
+      const dist = Math.sqrt((clickX - m.x) ** 2 + (clickY - m.y) ** 2);
+      if (dist < 45) { // Touched meteor area
+        // Auto-type remaining characters for touch convenience!
+        const nextChar = m.text[m.typedIndex];
+        if (nextChar) {
+          processKeyPress(nextChar);
+        }
+        break;
+      }
+    }
+  };
+
   // Keyboard Event Listener
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -105,68 +202,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       const typedChar = e.key.toUpperCase();
       if (!/^[A-Z]$/.test(typedChar)) return;
 
-      setTypedTotal(t => t + 1);
-
-      const engine = engineState.current;
-      let target = null;
-
-      // 1. If currently targeting a meteor, continue typing that one
-      if (engine.activeTargetId) {
-        target = engine.meteors.find(m => m.id === engine.activeTargetId);
-      }
-
-      // 2. Otherwise find lowest meteor starting with typed character
-      if (!target) {
-        const matching = engine.meteors
-          .filter(m => m.text[m.typedIndex] === typedChar)
-          .sort((a, b) => b.y - a.y); // Lowest meteor on screen first
-
-        if (matching.length > 0) {
-          target = matching[0];
-          engine.activeTargetId = target.id;
-        }
-      }
-
-      // 3. Process key press against target
-      if (target && target.text[target.typedIndex] === typedChar) {
-        target.typedIndex++;
-        setCorrectTyped(c => c + 1);
-        soundFX.playTypePop();
-
-        // Fire Laser beam from ground cannon (bottom center) to meteor
-        engine.lasers.push({
-          x1: CANVAS_WIDTH / 2,
-          y1: CANVAS_HEIGHT - 20,
-          x2: target.x,
-          y2: target.y,
-          color: '#38bdf8',
-          alpha: 1.0
-        });
-
-        // If target completely typed!
-        if (target.typedIndex >= target.text.length) {
-          // Detonate meteor!
-          addParticles(target.x, target.y, target.color, 16);
-          soundFX.playPowerUp();
-
-          // Remove meteor
-          engine.meteors = engine.meteors.filter(m => m.id !== target.id);
-          engine.activeTargetId = null;
-
-          setCombo(c => {
-            const nextCombo = c + 1;
-            setScore(s => s + (target.text.length * 20) + (nextCombo * 5));
-            return nextCombo;
-          });
-
-          setClearedCount(cnt => cnt + 1);
-        }
-      } else {
-        // Missed key!
-        soundFX.playTypeMiss();
-        setCombo(0);
-        engine.activeTargetId = null;
-      }
+      processKeyPress(typedChar);
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -565,7 +601,7 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
       </div>
 
       {/* Main Viewport */}
-      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950">
+      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[800px]">
         
         {/* Health Shield Bar Overlay */}
         <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
@@ -591,7 +627,9 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
-          className="block"
+          onClick={handleCanvasClickOrTouch}
+          onTouchStart={handleCanvasClickOrTouch}
+          className="block w-full h-auto cursor-pointer"
         />
 
         {/* Start / Menu Overlay */}
@@ -675,6 +713,53 @@ export default function TypingGame({ onBackToHub, onSaveScore }) {
         )}
 
       </div>
+
+      {/* Interactive Mobile Touch Keyboard */}
+      {gameState === 'playing' && (
+        <div className="w-full max-w-[800px] mt-3 bg-slate-900/90 p-3 rounded-xl border border-slate-800 flex flex-col gap-1.5 items-center backdrop-blur">
+          {/* Row 1 */}
+          <div className="flex gap-1 justify-center w-full">
+            {['Q','W','E','R','T','Y','U','I','O','P'].map(char => (
+              <button
+                key={char}
+                onClick={() => processKeyPress(char)}
+                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
+                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
+              >
+                {char}
+              </button>
+            ))}
+          </div>
+
+          {/* Row 2 */}
+          <div className="flex gap-1 justify-center w-full">
+            {['A','S','D','F','G','H','J','K','L'].map(char => (
+              <button
+                key={char}
+                onClick={() => processKeyPress(char)}
+                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
+                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
+              >
+                {char}
+              </button>
+            ))}
+          </div>
+
+          {/* Row 3 */}
+          <div className="flex gap-1 justify-center w-full">
+            {['Z','X','C','V','B','N','M'].map(char => (
+              <button
+                key={char}
+                onClick={() => processKeyPress(char)}
+                onTouchStart={(e) => { e.preventDefault(); processKeyPress(char); }}
+                className="flex-1 max-w-[50px] py-2.5 bg-slate-800 hover:bg-cyan-600 active:bg-cyan-500 text-slate-100 active:text-white font-mono font-bold text-sm sm:text-base rounded-lg border border-slate-700/80 active:scale-95 transition-all select-none shadow"
+              >
+                {char}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Control Instructions */}
       <div className="w-full max-w-[800px] mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">

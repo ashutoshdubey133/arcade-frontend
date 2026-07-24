@@ -520,6 +520,21 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
   };
 
   // Touch / Drag Paddles on Screen for Mobile / Mouse Support
+  const handleCanvasTouchMove = (e) => {
+    if (gameState !== 'playing') return;
+    if (e.touches && e.touches.length > 0) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      const touchY = e.touches[0].clientY - rect.top;
+      const scaleY = CANVAS_HEIGHT / rect.height;
+      const canvasY = touchY * scaleY;
+
+      engineState.current.p1Y = Math.max(
+        0, 
+        Math.min(CANVAS_HEIGHT - engineState.current.p1Height, canvasY - engineState.current.p1Height / 2)
+      );
+    }
+  };
+
   const handleCanvasMouseMove = (e) => {
     if (gameState !== 'playing') return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -568,13 +583,15 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
       </div>
 
       {/* Main Canvas Viewport */}
-      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-cyan-950/40 bg-slate-950">
+      <div className="relative border-4 border-slate-800 rounded-2xl overflow-hidden shadow-2xl shadow-cyan-950/40 bg-slate-950 w-full max-w-[800px]">
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
           onMouseMove={handleCanvasMouseMove}
-          className="block touch-none cursor-pointer"
+          onTouchStart={handleCanvasTouchMove}
+          onTouchMove={handleCanvasTouchMove}
+          className="block w-full h-auto touch-none cursor-pointer"
         />
 
         {/* Start / Main Menu Overlay */}
@@ -741,6 +758,64 @@ export default function PingPongGame({ onBackToHub, onSaveScore }) {
           </div>
         )}
       </div>
+
+      {/* Mobile On-Screen Touch Controls */}
+      {gameState === 'playing' && (
+        <div className="w-full max-w-[800px] mt-3 grid grid-cols-2 gap-4">
+          {/* P1 Controls */}
+          <div className="flex gap-2">
+            <button
+              onMouseDown={() => { keysPressed.current['KeyW'] = true; }}
+              onMouseUp={() => { keysPressed.current['KeyW'] = false; }}
+              onTouchStart={(e) => { e.preventDefault(); keysPressed.current['KeyW'] = true; }}
+              onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['KeyW'] = false; }}
+              className="flex-1 py-3 bg-emerald-600/80 active:bg-emerald-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-emerald-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+            >
+              ▲ P1 UP
+            </button>
+            <button
+              onMouseDown={() => { keysPressed.current['KeyS'] = true; }}
+              onMouseUp={() => { keysPressed.current['KeyS'] = false; }}
+              onTouchStart={(e) => { e.preventDefault(); keysPressed.current['KeyS'] = true; }}
+              onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['KeyS'] = false; }}
+              className="flex-1 py-3 bg-emerald-600/80 active:bg-emerald-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-emerald-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+            >
+              ▼ P1 DOWN
+            </button>
+          </div>
+
+          {/* P2 Controls or Pause */}
+          {gameMode === 'twoPlayer' ? (
+            <div className="flex gap-2">
+              <button
+                onMouseDown={() => { keysPressed.current['ArrowUp'] = true; }}
+                onMouseUp={() => { keysPressed.current['ArrowUp'] = false; }}
+                onTouchStart={(e) => { e.preventDefault(); keysPressed.current['ArrowUp'] = true; }}
+                onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['ArrowUp'] = false; }}
+                className="flex-1 py-3 bg-purple-600/80 active:bg-purple-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-purple-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+              >
+                ▲ P2 UP
+              </button>
+              <button
+                onMouseDown={() => { keysPressed.current['ArrowDown'] = true; }}
+                onMouseUp={() => { keysPressed.current['ArrowDown'] = false; }}
+                onTouchStart={(e) => { e.preventDefault(); keysPressed.current['ArrowDown'] = true; }}
+                onTouchEnd={(e) => { e.preventDefault(); keysPressed.current['ArrowDown'] = false; }}
+                className="flex-1 py-3 bg-purple-600/80 active:bg-purple-500 text-white font-bold rounded-xl text-lg select-none shadow-lg border border-purple-500/40 active:scale-95 transition-transform flex items-center justify-center gap-1"
+              >
+                ▼ P2 DOWN
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setGameState(prev => prev === 'playing' ? 'paused' : 'playing')}
+              className="py-3 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-xl text-sm border border-slate-700 active:scale-95 transition-transform flex items-center justify-center gap-1"
+            >
+              <Pause className="w-4 h-4" /> Pause Game
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Controls Hint Footer */}
       <div className="w-full max-w-[800px] mt-4 p-3 bg-slate-900/60 rounded-xl border border-slate-800/80 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">
