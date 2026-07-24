@@ -1,7 +1,8 @@
 # 🤖 FRONTEND PROJECT_CONTEXT.md — Agent Specification
 
 > **MANDATORY AI AGENT INSTRUCTION**:
-> Whenever an AI agent modifies code in `frontend/`, **THE AGENT MUST IMMEDIATELY UPDATE THIS `PROJECT_CONTEXT.md` AND `README.md`** so future AI sessions remain 100% synchronized with the project state.
+> 1. Whenever an AI agent modifies code in `frontend/`, **THE AGENT MUST IMMEDIATELY UPDATE THIS `PROJECT_CONTEXT.md` AND `README.md`** so future AI sessions remain 100% synchronized with the project state.
+> 2. **ALWAYS COMMIT AND PUSH**: At the end of every task execution, the agent MUST automatically stage, commit, and push all frontend changes to origin main (`git add . && git commit -m "..." && git push origin main`).
 
 ---
 
@@ -31,7 +32,7 @@
 
 4. **`TypingGame.jsx` (Sky Letters: Type Defense)**:
    * Aesthetic mountain parallax landscape with glowing moon, twinkling stars, and laser cannon.
-   * **Infinite Procedural Levels**: Scales endlessly with dynamic word length pools, accelerating fall speeds, and +25 HP shield bonuses.
+   * **Wave Defense Progression**: Escalating waves, word-length balanced speed scaling (longer words fall slower), 7-combo Hyper Fever Mode (3x score), floating score text, and wave clear shield repairs (+15 HP).
    * **Strict Typing Only**: Direct meteor tap/click is disabled.
    * **Native Mobile Soft Keyboard**: Automatically focuses phone keyboard with `TAP TO OPEN PHONE KEYBOARD 📱` helper trigger.
 
