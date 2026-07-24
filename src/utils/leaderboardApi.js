@@ -1,6 +1,6 @@
 // API client with LocalStorage fallback for seamless offline or standalone operation
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://arcade-backend-gtgl.onrender.com/api';
 const LOCAL_STORAGE_KEY = 'arcade_scores_v1';
 
 // Initial sample scores if none exist locally

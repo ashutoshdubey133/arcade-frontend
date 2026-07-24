@@ -257,7 +257,7 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
         </div>
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-slate-400">Backend API Ready (`http://localhost:8080`)</span>
+          <span className="text-slate-400">Render REST API Live (`https://arcade-backend-gtgl.onrender.com`)</span>
         </div>
       </footer>
     </div>

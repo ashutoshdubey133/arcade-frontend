@@ -62,5 +62,5 @@ docker compose up --build
 2. Sign up on [Vercel.com](https://vercel.com) (No credit card required).
 3. Import your repository and add an Environment Variable:
    * **Key**: `VITE_API_URL`
-   * **Value**: `https://your-backend-api.onrender.com/api`
+   * **Value**: `https://arcade-backend-gtgl.onrender.com/api`
 4. Click **Deploy**.

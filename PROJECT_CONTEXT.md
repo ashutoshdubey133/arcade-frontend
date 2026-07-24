@@ -40,7 +40,7 @@
 
 ## 🔊 Audio & API Utilities
 * **`utils/soundFX.js`**: Web Audio API procedural synthesizer for zero-latency retro sound effects.
-* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL`) with automatic LocalStorage fallback.
+* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback.
 
 ---
 
