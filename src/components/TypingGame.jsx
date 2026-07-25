@@ -883,10 +883,7 @@ export default function TypingGame({
   const finalAccColor = finalAccuracy >= 90 ? 'text-emerald-400' : finalAccuracy >= 70 ? 'text-amber-400' : 'text-red-400';
 
   return (
-    <div 
-      className="flex flex-col items-center justify-start sm:justify-center w-full p-0 sm:p-4 select-none overflow-hidden"
-      style={{ height: window.innerWidth < 640 ? `${viewportHeight}px` : undefined }}
-    >
+    <div className="flex flex-col items-center justify-start sm:justify-center w-full min-h-[100dvh] sm:min-h-[85vh] p-0 sm:p-4 select-none">
       
       {/* Mobile Ultra-Compact Top Bar (Shown only on small screens < 640px) */}
       <div className="w-full flex sm:hidden items-center justify-between px-2 py-1.5 bg-slate-950/90 border-b border-slate-800 backdrop-blur z-20 text-[11px] font-mono font-bold shrink-0">
@@ -945,8 +942,8 @@ export default function TypingGame({
         </div>
       )}
 
-      {/* Game Canvas Container (Dynamically adjusts height above virtual/physical mobile keyboard) */}
-      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center h-full sm:h-auto">
+      {/* Game Canvas Container (Full-size proportional canvas) */}
+      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center min-h-[420px] sm:min-h-[450px]">
         {/* HUD Bar (Shield & Wave Progress) */}
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
           {/* Health Shield */}
