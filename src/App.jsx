@@ -6,7 +6,7 @@ import MinesweeperGame from './components/MinesweeperGame';
 import TypingGame from './components/TypingGame';
 import LeaderboardModal from './components/LeaderboardModal';
 import { LeftSidebar, RightSidebar } from './components/ArcadeSidebars';
-import { saveScore, checkHandleExpiration, touchHandleActivity } from './utils/leaderboardApi';
+import { saveScore, checkHandleExpiration, touchHandleActivity, recordDailyPlay } from './utils/leaderboardApi';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import UsernameModal from './components/UsernameModal';
 
@@ -43,10 +43,16 @@ export default function App() {
     }
   }, []);
 
+  const handleSelectGame = (gameId) => {
+    recordDailyPlay();
+    setCurrentView(gameId);
+  };
+
   const handleClaimUsername = (claimedName) => {
     const clean = claimedName.trim();
     setPlayerNameState(clean);
     setIsNameLocked(true);
+    recordDailyPlay();
     try {
       localStorage.setItem(PLAYER_NAME_KEY, clean);
       localStorage.setItem(PLAYER_LOCKED_KEY, 'true');
@@ -94,10 +100,11 @@ export default function App() {
         <main className="flex-1 w-full min-w-0">
           {currentView === 'hub' && (
             <ArcadeHub
-              onSelectGame={(gameId) => setCurrentView(gameId)}
+              onSelectGame={handleSelectGame}
               onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
               isMuted={isMuted}
               onToggleMute={handleToggleMute}
+              playerName={playerName}
             />
           )}
 
@@ -141,7 +148,7 @@ export default function App() {
         {/* Right Side Desktop Widget */}
         <RightSidebar
           currentView={currentView}
-          onSelectGame={(gameId) => setCurrentView(gameId)}
+          onSelectGame={handleSelectGame}
         />
 
       </div>

@@ -5,8 +5,9 @@ import {
 } from 'lucide-react';
 import { soundFX } from '../utils/soundFX';
 import { checkBackendHealth } from '../utils/leaderboardApi';
+import UserGreetingHeader from './UserGreetingHeader';
 
-export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, onToggleMute }) {
+export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, onToggleMute, playerName }) {
   const [serverStatus, setServerStatus] = useState({ isOnline: false, url: '...', isChecking: true });
 
   useEffect(() => {
@@ -113,7 +114,9 @@ export default function ArcadeHub({ onSelectGame, onOpenLeaderboard, isMuted, on
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <UserGreetingHeader playerName={playerName} />
+
           <button
             onClick={onOpenLeaderboard}
             className="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-yellow-400 font-semibold rounded-xl transition-all shadow-md hover:border-yellow-500/40 text-sm"

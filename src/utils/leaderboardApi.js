@@ -5,7 +5,67 @@ const LOCAL_STORAGE_KEY = 'arcade_scores_v1';
 const HANDLE_ACTIVITY_KEY = 'arcade_handle_last_active_v1';
 const PLAYER_NAME_KEY = 'arcade_player_name_v1';
 const PLAYER_LOCKED_KEY = 'arcade_name_locked_v1';
+const STREAK_KEY = 'arcade_daily_streak_v1';
+const LAST_PLAY_KEY = 'arcade_last_play_date_v1';
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+export const getDailyStreakInfo = () => {
+  try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const lastPlayDate = localStorage.getItem(LAST_PLAY_KEY);
+    let streak = Number(localStorage.getItem(STREAK_KEY)) || 0;
+
+    if (!lastPlayDate) {
+      return { streak: 0, playedToday: false };
+    }
+
+    const today = new Date(todayStr);
+    const last = new Date(lastPlayDate);
+    const diffMs = today - last;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      return { streak: Math.max(1, streak), playedToday: true };
+    } else if (diffDays === 1) {
+      return { streak: Math.max(1, streak), playedToday: false };
+    } else {
+      return { streak: 0, playedToday: false };
+    }
+  } catch (e) {
+    return { streak: 0, playedToday: false };
+  }
+};
+
+export const recordDailyPlay = () => {
+  try {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const lastPlayDate = localStorage.getItem(LAST_PLAY_KEY);
+    let streak = Number(localStorage.getItem(STREAK_KEY)) || 0;
+
+    if (!lastPlayDate) {
+      streak = 1;
+    } else {
+      const today = new Date(todayStr);
+      const last = new Date(lastPlayDate);
+      const diffMs = today - last;
+      const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        if (streak === 0) streak = 1;
+      } else if (diffDays === 1) {
+        streak = (streak || 0) + 1;
+      } else {
+        streak = 1;
+      }
+    }
+
+    localStorage.setItem(STREAK_KEY, streak.toString());
+    localStorage.setItem(LAST_PLAY_KEY, todayStr);
+    return { streak, playedToday: true };
+  } catch (e) {
+    return { streak: 1, playedToday: true };
+  }
+};
 
 // Helper: Prune scores older than 7 days (Top 3 scores in any game or overall remain permanent!)
 export const pruneExpiredLocalScores = (scoresList) => {

@@ -42,9 +42,9 @@
 
 ## 🔊 Audio & API Utilities
 * **`utils/soundFX.js`**: Web Audio API procedural synthesizer for zero-latency retro sound effects.
-* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback, `autoSaveScore`, `checkUsernameAvailability`, and Top 3 permanent score immunity.
+* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback, `autoSaveScore`, `checkUsernameAvailability`, and Snapchat-style daily play streak engine (`recordDailyPlay`, `getDailyStreakInfo`).
 * **Universal Auto-Save Engine**: Monitors active game runs and automatically persists high scores if the player navigates away, switches games, or refreshes the page (`beforeunload`, `pagehide`).
-* **Mandatory Real-Time Username Claim & Top 3 Permanent Immunity Engine (`UsernameModal.jsx`, `PlayerHandleWidget.jsx`)**: Prompts unrecognized visitors for a unique username, verifies availability in real-time, auto-prunes non-top scores older than 7 days while keeping Top 3 scores permanently in the Hall of Fame.
+* **Top Username Greeting & Snapchat-Style Daily Play Streak (`UserGreetingHeader.jsx`)**: Blends into the top UI header displaying `"Hi, <username>"` alongside a Snapchat-style daily streak indicator (`🔥 <N> Days Streak`). Playing any 1 game on consecutive days increments the streak. Missed days (>1 day) reset the streak to 1.
 
 ---
 
