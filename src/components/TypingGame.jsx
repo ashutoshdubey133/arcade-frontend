@@ -942,8 +942,8 @@ export default function TypingGame({
         </div>
       )}
 
-      {/* Game Canvas Container (Full-size proportional canvas) */}
-      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center min-h-[420px] sm:min-h-[450px]">
+      {/* Game Canvas Container (Snug fit on mobile with zero empty space below status bar) */}
+      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] sm:flex-1 flex items-center justify-center h-auto sm:min-h-[450px]">
         {/* Desktop Canvas HUD Bar (Shield & Wave Progress - Hidden on Mobile to maximize canvas space) */}
         <div className="hidden sm:flex absolute top-4 left-4 right-4 z-20 items-center justify-between pointer-events-none">
           {/* Health Shield */}
@@ -965,7 +965,7 @@ export default function TypingGame({
           </div>
         </div>
 
-        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-full sm:h-auto cursor-pointer object-contain" />
+        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-auto cursor-pointer object-contain" />
         <input ref={mobileInputRef} type="text" onChange={handleMobileInputChange} className="opacity-0 absolute top-0 left-0 w-1 h-1 pointer-events-none" autoCapitalize="characters" autoCorrect="off" autoComplete="off" />
 
         {/* Wave Clear Transition Modal */}
