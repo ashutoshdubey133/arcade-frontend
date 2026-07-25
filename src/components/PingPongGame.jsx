@@ -742,14 +742,14 @@ export default function PingPongGame({
               </div>
             </div>
 
-            {/* Fixed Bottom Action Bar */}
-            <div className="w-full bg-slate-950/95 border-t border-slate-800 p-3 sm:p-4 flex items-center justify-center backdrop-blur shrink-0 z-10">
+            {/* Fixed Bottom Action Bar (Minimal height, pinned at bottom) */}
+            <div className="w-full bg-slate-950/90 border-t border-slate-800/80 p-2.5 sm:p-3 flex items-center justify-center backdrop-blur shrink-0 z-10">
               <button
                 type="button"
                 onClick={startGame}
-                className="w-full max-w-md py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
+                className="w-full max-w-md py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-sm sm:text-base transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
               >
-                <Play className="w-5 h-5 fill-current" /> PLAY NOW
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" /> PLAY NOW
               </button>
             </div>
           </div>

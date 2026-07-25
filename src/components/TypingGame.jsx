@@ -1016,13 +1016,13 @@ export default function TypingGame({
               </div>
             </div>
 
-            {/* Fixed Bottom Action Bar */}
-            <div className="w-full bg-slate-950/95 border-t border-slate-800 p-3 sm:p-4 flex items-center justify-center backdrop-blur shrink-0 z-10">
+            {/* Fixed Bottom Action Bar (Minimal height, pinned at bottom) */}
+            <div className="w-full bg-slate-950/90 border-t border-slate-800/80 p-2.5 sm:p-3 flex items-center justify-center backdrop-blur shrink-0 z-10">
               <button 
                 onClick={startGame} 
-                className="w-full max-w-sm py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
+                className="w-full max-w-sm py-2.5 sm:py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-sm sm:text-base transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
               >
-                <Play className="w-5 h-5 fill-current" /> START WAVE DEFENSE
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-current" /> START WAVE DEFENSE
               </button>
             </div>
           </div>
