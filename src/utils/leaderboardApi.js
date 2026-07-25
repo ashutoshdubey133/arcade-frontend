@@ -7,11 +7,37 @@ const PLAYER_NAME_KEY = 'arcade_player_name_v1';
 const PLAYER_LOCKED_KEY = 'arcade_name_locked_v1';
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 
-// Helper: Prune scores older than 7 days
+// Helper: Prune scores older than 7 days (Top 3 scores in any game or overall remain permanent!)
 export const pruneExpiredLocalScores = (scoresList) => {
   if (!Array.isArray(scoresList)) return [];
   const now = Date.now();
+
+  // Identify Top 3 scores for each game and overall
+  const top3Ids = new Set();
+  const gameGroups = {};
+
+  scoresList.forEach(entry => {
+    const gameKey = (entry.game || 'other').trim().toLowerCase();
+    if (!gameGroups[gameKey]) gameGroups[gameKey] = [];
+    gameGroups[gameKey].push(entry);
+  });
+
+  Object.values(gameGroups).forEach(group => {
+    const sorted = [...group].sort((a, b) => b.score - a.score);
+    sorted.slice(0, 3).forEach(topEntry => {
+      if (topEntry.id !== undefined) top3Ids.add(topEntry.id);
+    });
+  });
+
+  const sortedOverall = [...scoresList].sort((a, b) => b.score - a.score);
+  sortedOverall.slice(0, 3).forEach(topEntry => {
+    if (topEntry.id !== undefined) top3Ids.add(topEntry.id);
+  });
+
   return scoresList.filter(entry => {
+    // Top 3 scores of any game or overall remain permanently in Hall of Fame!
+    if (entry.id !== undefined && top3Ids.has(entry.id)) return true;
+
     if (!entry.date) return true;
     const entryTime = new Date(entry.date).getTime();
     if (isNaN(entryTime)) return true;
