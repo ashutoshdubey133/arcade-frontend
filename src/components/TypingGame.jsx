@@ -94,6 +94,33 @@ export default function TypingGame({
   const [isFever,        setIsFever]        = useState(false);
   const [liveAccuracy,   setLiveAccuracy]   = useState(100);
   const [finalAccuracy,  setFinalAccuracy]  = useState(100);
+  const [viewportHeight, setViewportHeight] = useState(() => {
+    return window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  });
+
+  useEffect(() => {
+    const handleViewport = () => {
+      if (window.visualViewport) {
+        setViewportHeight(window.visualViewport.height);
+      } else {
+        setViewportHeight(window.innerHeight);
+      }
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', handleViewport);
+      window.visualViewport.addEventListener('scroll', handleViewport);
+    }
+    window.addEventListener('resize', handleViewport);
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', handleViewport);
+        window.visualViewport.removeEventListener('scroll', handleViewport);
+      }
+      window.removeEventListener('resize', handleViewport);
+    };
+  }, []);
 
   const lettersAttempted = useRef(0);
   const lettersCorrect   = useRef(0);
@@ -856,7 +883,10 @@ export default function TypingGame({
   const finalAccColor = finalAccuracy >= 90 ? 'text-emerald-400' : finalAccuracy >= 70 ? 'text-amber-400' : 'text-red-400';
 
   return (
-    <div className="flex flex-col items-center justify-start sm:justify-center w-full h-[100dvh] sm:min-h-[85vh] p-0 sm:p-4 select-none overflow-hidden">
+    <div 
+      className="flex flex-col items-center justify-start sm:justify-center w-full p-0 sm:p-4 select-none overflow-hidden"
+      style={{ height: window.innerWidth < 640 ? `${viewportHeight}px` : undefined }}
+    >
       
       {/* Mobile Ultra-Compact Top Bar (Shown only on small screens < 640px) */}
       <div className="w-full flex sm:hidden items-center justify-between px-2 py-1.5 bg-slate-950/90 border-b border-slate-800 backdrop-blur z-20 text-[11px] font-mono font-bold shrink-0">
@@ -915,7 +945,7 @@ export default function TypingGame({
         </div>
       )}
 
-      {/* Game Canvas Container (Stretches 100% of remaining screen height on mobile) */}
+      {/* Game Canvas Container (Dynamically adjusts height above virtual/physical mobile keyboard) */}
       <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center h-full sm:h-auto">
         {/* HUD Bar (Shield & Wave Progress) */}
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
@@ -938,7 +968,7 @@ export default function TypingGame({
           </div>
         </div>
 
-        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-full sm:h-auto cursor-pointer object-fill sm:object-contain" />
+        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-full sm:h-auto cursor-pointer object-contain" />
         <input ref={mobileInputRef} type="text" onChange={handleMobileInputChange} className="opacity-0 absolute top-0 left-0 w-1 h-1 pointer-events-none" autoCapitalize="characters" autoCorrect="off" autoComplete="off" />
 
         {/* Wave Clear Transition Modal */}
