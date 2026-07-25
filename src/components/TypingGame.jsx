@@ -779,9 +779,9 @@ export default function TypingGame({
           ctx.lineWidth = isTarget ? 3 : 2;
         }
 
-        const iconPad = m.isPowerup ? 28 : 0;
-        const boxWidth = Math.max(52, m.text.length * 18 + 20 + iconPad);
-        const boxHeight = m.isPowerup ? 44 : 36;
+        const iconPad = m.isPowerup ? 30 : 0;
+        const boxWidth = Math.max(64, m.text.length * 20 + 24 + iconPad);
+        const boxHeight = m.isPowerup ? 48 : 40;
 
         ctx.beginPath();
         ctx.roundRect(m.x - boxWidth / 2, m.y - boxHeight / 2, boxWidth, boxHeight, 10);
@@ -789,15 +789,15 @@ export default function TypingGame({
         ctx.stroke();
 
         if (m.isPowerup) {
-          ctx.font = 'bold 10px monospace';
+          ctx.font = 'bold 12px monospace';
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
           ctx.fillStyle = m.color;
           ctx.shadowBlur = 0;
-          ctx.fillText(m.powerupIcon, m.x - boxWidth / 2 + 4, m.y);
+          ctx.fillText(m.powerupIcon, m.x - boxWidth / 2 + 5, m.y);
         }
 
-        ctx.font = 'bold 18px monospace';
+        ctx.font = 'bold 22px monospace';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
 
@@ -886,20 +886,20 @@ export default function TypingGame({
     <div className="flex flex-col items-center justify-start sm:justify-center w-full min-h-[100dvh] sm:min-h-[85vh] p-0 sm:p-4 select-none">
       
       {/* Mobile Ultra-Compact Top Bar (Shown only on small screens < 640px) */}
-      <div className="w-full flex sm:hidden items-center justify-between px-2 py-1.5 bg-slate-950/90 border-b border-slate-800 backdrop-blur z-20 text-[11px] font-mono font-bold shrink-0">
-        <button onClick={onBackToHub} className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px]">
-          <ArrowLeft className="w-3.5 h-3.5" /> Hub
+      <div className="w-full flex sm:hidden items-center justify-between px-2.5 py-2 bg-slate-950/95 border-b border-slate-800 backdrop-blur z-20 text-xs font-mono font-black shrink-0">
+        <button onClick={onBackToHub} className="flex items-center gap-1 px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-bold">
+          <ArrowLeft className="w-4 h-4" /> Hub
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-purple-400">W{wave}</span>
+        <div className="flex items-center gap-2.5">
+          <span className="text-purple-400 font-extrabold">W{wave} ({waveProgress}/{waveTarget})</span>
           <span className="text-cyan-400 font-extrabold">⭐{score}</span>
           <span className={health > 50 ? 'text-emerald-400' : 'text-red-400'}>❤️{health}%</span>
           {combo > 1 && <span className="text-amber-400 animate-pulse">🔥{combo}x</span>}
         </div>
 
-        <button onClick={handleToggleMute} className="p-1 text-slate-300 bg-slate-800 rounded">
-          {isMuted ? <VolumeX className="w-3.5 h-3.5 text-red-400" /> : <Volume2 className="w-3.5 h-3.5 text-cyan-400" />}
+        <button onClick={handleToggleMute} className="p-1.5 text-slate-300 bg-slate-800 rounded-lg">
+          {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-cyan-400" />}
         </button>
       </div>
 
@@ -944,24 +944,24 @@ export default function TypingGame({
 
       {/* Game Canvas Container (Full-size proportional canvas) */}
       <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center min-h-[420px] sm:min-h-[450px]">
-        {/* HUD Bar (Shield & Wave Progress) */}
-        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
+        {/* Desktop Canvas HUD Bar (Shield & Wave Progress - Hidden on Mobile to maximize canvas space) */}
+        <div className="hidden sm:flex absolute top-4 left-4 right-4 z-20 items-center justify-between pointer-events-none">
           {/* Health Shield */}
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-950/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-800 backdrop-blur">
-            <Shield className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-cyan-400" />
-            <div className="w-16 sm:w-28 bg-slate-800 h-2 sm:h-2.5 rounded-full overflow-hidden">
+          <div className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 backdrop-blur">
+            <Shield className="w-4 h-4 text-cyan-400" />
+            <div className="w-28 bg-slate-800 h-2.5 rounded-full overflow-hidden">
               <div className={"h-full transition-all duration-300 " + (health > 50 ? 'bg-emerald-500' : health > 25 ? 'bg-amber-500' : 'bg-red-500')} style={{ width: health + '%' }} />
             </div>
-            <span className="text-[10px] sm:text-xs font-mono font-bold text-slate-200">{health}%</span>
+            <span className="text-xs font-mono font-bold text-slate-200">{health}%</span>
           </div>
 
           {/* Wave Meter */}
-          <div className="flex items-center gap-1.5 sm:gap-2 bg-slate-950/80 px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl border border-slate-800 backdrop-blur">
-            <span className="text-[10px] sm:text-xs font-mono text-purple-400 font-bold">WAVE {wave}</span>
-            <div className="w-16 sm:w-24 bg-slate-800 h-2 sm:h-2.5 rounded-full overflow-hidden">
+          <div className="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-xl border border-slate-800 backdrop-blur">
+            <span className="text-xs font-mono text-purple-400 font-bold">WAVE {wave}</span>
+            <div className="w-24 bg-slate-800 h-2.5 rounded-full overflow-hidden">
               <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style={{ width: Math.min(100, Math.round((waveProgress / waveTarget) * 100)) + '%' }} />
             </div>
-            <span className="text-[10px] sm:text-xs font-mono text-slate-300 font-bold">{waveProgress}/{waveTarget}</span>
+            <span className="text-xs font-mono text-slate-300 font-bold">{waveProgress}/{waveTarget}</span>
           </div>
         </div>
 
