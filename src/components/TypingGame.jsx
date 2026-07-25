@@ -984,37 +984,46 @@ export default function TypingGame({
 
         {/* Menu Screen */}
         {gameState === 'menu' && (
-          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 text-center overflow-y-auto z-30">
-            <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 pt-2">
-              <Keyboard className="w-8 h-8 text-cyan-400 animate-bounce" />
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500">SKY LETTERS</h1>
-              <p className="text-slate-400 text-xs sm:text-sm max-w-xs">Defend your base in progressive waves! Maintain combos to trigger Hyper Fever Mode.</p>
+          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col justify-between overflow-hidden z-30">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 text-center">
+              <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 pt-2">
+                <Keyboard className="w-8 h-8 text-cyan-400 animate-bounce" />
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500">SKY LETTERS</h1>
+                <p className="text-slate-400 text-xs sm:text-sm max-w-xs">Defend your base in progressive waves! Maintain combos to trigger Hyper Fever Mode.</p>
 
-              <PlayerHandleWidget
-                playerName={playerName}
-                onResetPlayerName={onResetPlayerName}
-                accentColor="cyan"
-              />
+                <PlayerHandleWidget
+                  playerName={playerName}
+                  onResetPlayerName={onResetPlayerName}
+                  accentColor="cyan"
+                />
 
-              <button onClick={startGame} className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 my-1 shrink-0">
-                <Play className="w-5 h-5 fill-current" /> START WAVE DEFENSE
-              </button>
-
-              <div className="w-full bg-slate-900/80 rounded-xl border border-slate-800 p-3 text-left">
-                <p className="text-[10px] font-bold text-purple-400 mb-2 uppercase tracking-widest">Escalating Streak Milestones & Powerups</p>
-                <div className="grid grid-cols-1 gap-1.5 text-xs text-slate-300">
-                  <div className="flex items-center gap-2"><Flame className="w-3.5 h-3.5 text-pink-400 shrink-0" /><strong className="text-pink-400">7x Streak:</strong> 6s 3x Hyper Fever Mode</div>
-                  <div className="flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /><strong className="text-amber-400">10x Streak:</strong> +500 PTS + 15 HP Repair & Powerup</div>
-                  <div className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" /><strong className="text-cyan-400">15x Streak:</strong> ⚡ EMP Plasma Wave + 1,000 PTS</div>
-                  <div className="flex items-center gap-2"><Award className="w-3.5 h-3.5 text-purple-400 shrink-0" /><strong className="text-purple-400">20x Streak:</strong> 👑 5x Godlike Fever + Full Repair</div>
-                  {POWERUP_DEFS.map(pu => (
-                    <div key={pu.id} className="flex items-center gap-2">
-                      <span className="font-bold w-14 shrink-0" style={{ color: pu.color }}>{pu.label}</span>
-                      <span className="text-slate-400">{pu.description}</span>
-                    </div>
-                  ))}
+                <div className="w-full bg-slate-900/80 rounded-xl border border-slate-800 p-3 text-left">
+                  <p className="text-[10px] font-bold text-purple-400 mb-2 uppercase tracking-widest">Escalating Streak Milestones & Powerups</p>
+                  <div className="grid grid-cols-1 gap-1.5 text-xs text-slate-300">
+                    <div className="flex items-center gap-2"><Flame className="w-3.5 h-3.5 text-pink-400 shrink-0" /><strong className="text-pink-400">7x Streak:</strong> 6s 3x Hyper Fever Mode</div>
+                    <div className="flex items-center gap-2"><Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" /><strong className="text-amber-400">10x Streak:</strong> +500 PTS + 15 HP Repair & Powerup</div>
+                    <div className="flex items-center gap-2"><Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" /><strong className="text-cyan-400">15x Streak:</strong> ⚡ EMP Plasma Wave + 1,000 PTS</div>
+                    <div className="flex items-center gap-2"><Award className="w-3.5 h-3.5 text-purple-400 shrink-0" /><strong className="text-purple-400">20x Streak:</strong> 👑 5x Godlike Fever + Full Repair</div>
+                    {POWERUP_DEFS.map(pu => (
+                      <div key={pu.id} className="flex items-center gap-2">
+                        <span className="font-bold w-14 shrink-0" style={{ color: pu.color }}>{pu.label}</span>
+                        <span className="text-slate-400">{pu.description}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
+            </div>
+
+            {/* Fixed Bottom Action Bar */}
+            <div className="w-full bg-slate-950/95 border-t border-slate-800 p-3 sm:p-4 flex items-center justify-center backdrop-blur shrink-0 z-10">
+              <button 
+                onClick={startGame} 
+                className="w-full max-w-sm py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
+              >
+                <Play className="w-5 h-5 fill-current" /> START WAVE DEFENSE
+              </button>
             </div>
           </div>
         )}

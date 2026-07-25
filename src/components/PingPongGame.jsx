@@ -636,116 +636,121 @@ export default function PingPongGame({
           className="block w-full h-auto touch-none cursor-pointer"
         />
 
-        {/* Start / Main Menu Overlay */}
+        {/* Menu Overlay */}
         {gameState === 'menu' && (
-          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-5 text-center overflow-y-auto z-30">
-            <div className="w-full max-w-md mx-auto flex flex-col items-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <Zap className="w-6 h-6 text-cyan-400 animate-bounce" />
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-500 neon-title">
-                  PING PONG ARCADE
-                </h1>
-              </div>
-              <p className="text-slate-400 text-xs sm:text-sm mb-3">
-                Classic table tennis with power-ups, AI & 2-Player modes
-              </p>
+          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col justify-between overflow-hidden z-30">
+            {/* Scrollable Content Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 text-center">
+              <div className="w-full max-w-md mx-auto flex flex-col items-center">
+                <div className="flex items-center justify-center gap-2 mb-1">
+                  <Zap className="w-6 h-6 text-cyan-400 animate-bounce" />
+                  <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-purple-500 neon-title">
+                    PING PONG ARCADE
+                  </h1>
+                </div>
+                <p className="text-slate-400 text-xs sm:text-sm mb-3">
+                  Classic table tennis with power-ups, AI & 2-Player modes
+                </p>
 
-              {/* Player Handle */}
-              <div className="w-full mb-3">
-                <PlayerHandleWidget
-                  playerName={playerName}
-                  onResetPlayerName={onResetPlayerName}
-                  accentColor="cyan"
-                />
-              </div>
+                {/* Player Handle */}
+                <div className="w-full mb-3">
+                  <PlayerHandleWidget
+                    playerName={playerName}
+                    onResetPlayerName={onResetPlayerName}
+                    accentColor="cyan"
+                  />
+                </div>
 
+                {/* Config Form */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full bg-slate-900/90 p-3 sm:p-4 rounded-xl border border-slate-800 text-left text-xs">
+                  <div>
+                    <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5 text-purple-400" /> Game Mode
+                    </label>
+                    <div className="flex gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setGameMode('single')}
+                        className={`flex-1 py-1.5 rounded-lg text-xs text-center transition-all ${
+                          gameMode === 'single'
+                            ? 'bg-cyan-600 text-white font-bold'
+                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                        }`}
+                      >
+                        VS AI
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setGameMode('twoPlayer')}
+                        className={`flex-1 py-1.5 rounded-lg text-xs text-center transition-all ${
+                          gameMode === 'twoPlayer'
+                            ? 'bg-purple-600 text-white font-bold'
+                            : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                        }`}
+                      >
+                        2 Players
+                      </button>
+                    </div>
+                  </div>
+
+                  {gameMode === 'single' && (
+                    <div>
+                      <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
+                        <Shield className="w-3.5 h-3.5 text-amber-400" /> AI Difficulty
+                      </label>
+                      <select
+                        value={difficulty}
+                        onChange={(e) => setDifficulty(e.target.value)}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-amber-500"
+                      >
+                        <option value="easy">Easy (Casual)</option>
+                        <option value="medium">Medium (Balanced)</option>
+                        <option value="hard">Hard (Challenging)</option>
+                        <option value="impossible">Impossible (Master)</option>
+                      </select>
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
+                      <Trophy className="w-3.5 h-3.5 text-yellow-400" /> Winning Score
+                    </label>
+                    <select
+                      value={winningScore}
+                      onChange={(e) => setWinningScore(Number(e.target.value))}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-yellow-500"
+                    >
+                      <option value={5}>First to 5</option>
+                      <option value={7}>First to 7</option>
+                      <option value={10}>First to 10</option>
+                      <option value={15}>First to 15</option>
+                    </select>
+                  </div>
+
+                  <div className="col-span-1 sm:col-span-2 flex items-center justify-between pt-1">
+                    <span className="text-slate-300 text-xs flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-yellow-400" /> Arcade Power-Ups
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={enablePowerUps}
+                      onChange={(e) => setEnablePowerUps(e.target.checked)}
+                      className="w-4 h-4 accent-cyan-500 rounded cursor-pointer"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Fixed Bottom Action Bar */}
+            <div className="w-full bg-slate-950/95 border-t border-slate-800 p-3 sm:p-4 flex items-center justify-center backdrop-blur shrink-0 z-10">
               <button
                 type="button"
                 onClick={startGame}
-                className="w-full max-w-md py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2 mb-3 shrink-0"
+                className="w-full max-w-md py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2"
               >
                 <Play className="w-5 h-5 fill-current" /> PLAY NOW
               </button>
-
-              {/* Config Form */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full bg-slate-900/90 p-3 sm:p-4 rounded-xl border border-slate-800 text-left text-xs">
-
-                <div>
-                  <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
-                    <Users className="w-3.5 h-3.5 text-purple-400" /> Game Mode
-                  </label>
-                  <div className="flex gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => setGameMode('single')}
-                      className={`flex-1 py-1.5 rounded-lg text-xs text-center transition-all ${
-                        gameMode === 'single'
-                          ? 'bg-cyan-600 text-white font-bold'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      }`}
-                    >
-                      VS AI
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setGameMode('twoPlayer')}
-                      className={`flex-1 py-1.5 rounded-lg text-xs text-center transition-all ${
-                        gameMode === 'twoPlayer'
-                          ? 'bg-purple-600 text-white font-bold'
-                          : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                      }`}
-                    >
-                      2 Players
-                    </button>
-                  </div>
-                </div>
-
-                {gameMode === 'single' && (
-                  <div>
-                    <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
-                      <Shield className="w-3.5 h-3.5 text-amber-400" /> AI Difficulty
-                    </label>
-                    <select
-                      value={difficulty}
-                      onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-amber-500"
-                    >
-                      <option value="easy">Easy (Casual)</option>
-                      <option value="medium">Medium (Balanced)</option>
-                      <option value="hard">Hard (Challenging)</option>
-                      <option value="impossible">Impossible (Master)</option>
-                    </select>
-                  </div>
-                )}
-
-                <div>
-                  <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
-                    <Trophy className="w-3.5 h-3.5 text-yellow-400" /> Winning Score
-                  </label>
-                  <select
-                    value={winningScore}
-                    onChange={(e) => setWinningScore(Number(e.target.value))}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-slate-100 text-xs focus:outline-none focus:border-yellow-500"
-                  >
-                    <option value={5}>First to 5</option>
-                    <option value={7}>First to 7</option>
-                    <option value={10}>First to 10</option>
-                    <option value={15}>First to 15</option>
-                  </select>
-                </div>
-
-                <div className="col-span-1 sm:col-span-2 flex items-center justify-between pt-1">
-                  <span className="text-slate-300 text-xs flex items-center gap-1">
-                    <Zap className="w-3.5 h-3.5 text-yellow-400" /> Arcade Power-Ups
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={enablePowerUps}
-                    onChange={(e) => setEnablePowerUps(e.target.checked)}
-                    className="w-4 h-4 accent-cyan-500 rounded cursor-pointer"
-                  />
-                </div>
-              </div>
             </div>
           </div>
         )}
