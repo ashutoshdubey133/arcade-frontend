@@ -659,8 +659,16 @@ export default function PingPongGame({
                 />
               </div>
 
+              <button
+                type="button"
+                onClick={startGame}
+                className="w-full max-w-md py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2 mb-3 shrink-0"
+              >
+                <Play className="w-5 h-5 fill-current" /> PLAY NOW
+              </button>
+
               {/* Config Form */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full bg-slate-900/90 p-3 sm:p-4 rounded-xl border border-slate-800 text-left text-xs mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full bg-slate-900/90 p-3 sm:p-4 rounded-xl border border-slate-800 text-left text-xs">
 
                 <div>
                   <label className="text-slate-400 mb-1 block font-semibold flex items-center gap-1">
@@ -739,14 +747,6 @@ export default function PingPongGame({
                 </div>
               </div>
             </div>
-
-            <button
-              type="button"
-              onClick={startGame}
-              className="w-full max-w-md py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:from-cyan-600 active:to-teal-600 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base sm:text-lg transition-transform hover:scale-102 active:scale-95 flex items-center justify-center gap-2 my-1 shrink-0"
-            >
-              <Play className="w-5 h-5 fill-current" /> PLAY NOW
-            </button>
           </div>
         )}
 

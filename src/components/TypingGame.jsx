@@ -984,11 +984,21 @@ export default function TypingGame({
 
         {/* Menu Screen */}
         {gameState === 'menu' && (
-          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 text-center overflow-y-auto z-30">
+          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-start p-4 sm:p-6 text-center overflow-y-auto z-30">
             <div className="w-full max-w-sm mx-auto flex flex-col items-center gap-3 pt-2">
               <Keyboard className="w-8 h-8 text-cyan-400 animate-bounce" />
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500">SKY LETTERS</h1>
               <p className="text-slate-400 text-xs sm:text-sm max-w-xs">Defend your base in progressive waves! Maintain combos to trigger Hyper Fever Mode.</p>
+
+              <PlayerHandleWidget
+                playerName={playerName}
+                onResetPlayerName={onResetPlayerName}
+                accentColor="cyan"
+              />
+
+              <button onClick={startGame} className="w-full py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 my-1 shrink-0">
+                <Play className="w-5 h-5 fill-current" /> START WAVE DEFENSE
+              </button>
 
               <div className="w-full bg-slate-900/80 rounded-xl border border-slate-800 p-3 text-left">
                 <p className="text-[10px] font-bold text-purple-400 mb-2 uppercase tracking-widest">Escalating Streak Milestones & Powerups</p>
@@ -1005,17 +1015,7 @@ export default function TypingGame({
                   ))}
                 </div>
               </div>
-
-              <PlayerHandleWidget
-                playerName={playerName}
-                onResetPlayerName={onResetPlayerName}
-                accentColor="cyan"
-              />
             </div>
-
-            <button onClick={startGame} className="w-full max-w-sm py-3 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-slate-950 font-extrabold rounded-xl shadow-lg shadow-cyan-500/30 text-base transition-transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 mt-4 shrink-0">
-              <Play className="w-5 h-5 fill-current" /> START WAVE DEFENSE
-            </button>
           </div>
         )}
 
