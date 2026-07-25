@@ -856,10 +856,10 @@ export default function TypingGame({
   const finalAccColor = finalAccuracy >= 90 ? 'text-emerald-400' : finalAccuracy >= 70 ? 'text-amber-400' : 'text-red-400';
 
   return (
-    <div className="flex flex-col items-center justify-start sm:justify-center w-full min-h-[100dvh] sm:min-h-[85vh] p-0 sm:p-4 select-none">
+    <div className="flex flex-col items-center justify-start sm:justify-center w-full h-[100dvh] sm:min-h-[85vh] p-0 sm:p-4 select-none overflow-hidden">
       
       {/* Mobile Ultra-Compact Top Bar (Shown only on small screens < 640px) */}
-      <div className="w-full flex sm:hidden items-center justify-between px-2 py-1.5 bg-slate-950/90 border-b border-slate-800 backdrop-blur z-20 text-[11px] font-mono font-bold">
+      <div className="w-full flex sm:hidden items-center justify-between px-2 py-1.5 bg-slate-950/90 border-b border-slate-800 backdrop-blur z-20 text-[11px] font-mono font-bold shrink-0">
         <button onClick={onBackToHub} className="flex items-center gap-1 px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px]">
           <ArrowLeft className="w-3.5 h-3.5" /> Hub
         </button>
@@ -902,7 +902,7 @@ export default function TypingGame({
 
       {/* Active Powerups Banner */}
       {activePowerups.length > 0 && (
-        <div className="w-full max-w-[800px] flex gap-2 px-2 sm:px-0 mb-2 flex-wrap">
+        <div className="w-full max-w-[800px] flex gap-2 px-2 sm:px-0 mb-2 flex-wrap shrink-0">
           {activePowerups.map(pu => {
             const remaining = Math.max(0, Math.ceil((pu.expiresAt - Date.now()) / 1000));
             return (
@@ -915,8 +915,8 @@ export default function TypingGame({
         </div>
       )}
 
-      {/* Game Canvas Container (Maximized for mobile viewports above soft/physical keyboards) */}
-      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center max-h-[calc(100dvh-40px)] sm:max-h-none">
+      {/* Game Canvas Container (Stretches 100% of remaining screen height on mobile) */}
+      <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] flex-1 flex items-center justify-center h-full sm:h-auto">
         {/* HUD Bar (Shield & Wave Progress) */}
         <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
           {/* Health Shield */}
@@ -938,7 +938,7 @@ export default function TypingGame({
           </div>
         </div>
 
-        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-auto cursor-pointer max-h-full object-contain" />
+        <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} onClick={focusMobileKeyboard} onTouchStart={focusMobileKeyboard} className="block w-full h-full sm:h-auto cursor-pointer object-fill sm:object-contain" />
         <input ref={mobileInputRef} type="text" onChange={handleMobileInputChange} className="opacity-0 absolute top-0 left-0 w-1 h-1 pointer-events-none" autoCapitalize="characters" autoCorrect="off" autoComplete="off" />
 
         {/* Wave Clear Transition Modal */}
