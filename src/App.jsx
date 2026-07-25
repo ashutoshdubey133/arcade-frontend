@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ArcadeHub from './components/ArcadeHub';
 import PingPongGame from './components/PingPongGame';
 import BreakoutGame from './components/BreakoutGame';
