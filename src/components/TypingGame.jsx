@@ -927,23 +927,23 @@ export default function TypingGame({
         </button>
       </div>
 
-      {/* Active Powerups Banner */}
-      {activePowerups.length > 0 && (
-        <div className="w-full max-w-[800px] flex gap-2 px-2 sm:px-0 mb-2 flex-wrap shrink-0">
-          {activePowerups.map(pu => {
-            const remaining = Math.max(0, Math.ceil((pu.expiresAt - Date.now()) / 1000));
-            return (
-              <div key={pu.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-bold font-mono animate-pulse"
-                style={{ backgroundColor: pu.color + '22', borderColor: pu.color + '66', color: pu.color }}>
-                <Zap className="w-3 h-3" />{pu.badgeLabel}<span className="text-white opacity-70">{remaining}s</span>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
       {/* Game Canvas Container (Snug fit on mobile with zero empty space below status bar) */}
       <div className="relative border-0 sm:border-4 border-slate-800 rounded-none sm:rounded-2xl overflow-hidden shadow-2xl shadow-indigo-950/40 bg-slate-950 w-full max-w-[900px] sm:flex-1 flex items-center justify-center h-auto sm:min-h-[450px]">
+        {/* Active Powerups Floating Overlay (Appears on top of canvas without pushing layout down) */}
+        {activePowerups.length > 0 && (
+          <div className="absolute top-2 sm:top-14 left-2 sm:left-4 z-20 flex gap-2 flex-wrap pointer-events-none">
+            {activePowerups.map(pu => {
+              const remaining = Math.max(0, Math.ceil((pu.expiresAt - Date.now()) / 1000));
+              return (
+                <div key={pu.id} className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-bold font-mono animate-pulse backdrop-blur bg-slate-950/80 shadow-md"
+                  style={{ borderColor: pu.color + '66', color: pu.color }}>
+                  <Zap className="w-3 h-3" />{pu.badgeLabel}<span className="text-white opacity-70 ml-1">{remaining}s</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {/* Desktop Canvas HUD Bar (Shield & Wave Progress - Hidden on Mobile to maximize canvas space) */}
         <div className="hidden sm:flex absolute top-4 left-4 right-4 z-20 items-center justify-between pointer-events-none">
           {/* Health Shield */}
