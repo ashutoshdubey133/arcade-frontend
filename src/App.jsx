@@ -6,7 +6,7 @@ import MinesweeperGame from './components/MinesweeperGame';
 import TypingGame from './components/TypingGame';
 import LeaderboardModal from './components/LeaderboardModal';
 import { LeftSidebar, RightSidebar } from './components/ArcadeSidebars';
-import { saveScore } from './utils/leaderboardApi';
+import { saveScore, checkHandleExpiration, touchHandleActivity } from './utils/leaderboardApi';
 import CookieConsentBanner from './components/CookieConsentBanner';
 import UsernameModal from './components/UsernameModal';
 
@@ -32,6 +32,16 @@ export default function App() {
       return false;
     }
   });
+
+  useEffect(() => {
+    const isExpired = checkHandleExpiration();
+    if (isExpired) {
+      setPlayerNameState('');
+      setIsNameLocked(false);
+    } else if (playerName) {
+      touchHandleActivity();
+    }
+  }, []);
 
   const handleClaimUsername = (claimedName) => {
     const clean = claimedName.trim();

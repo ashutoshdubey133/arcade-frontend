@@ -42,9 +42,9 @@
 
 ## 🔊 Audio & API Utilities
 * **`utils/soundFX.js`**: Web Audio API procedural synthesizer for zero-latency retro sound effects.
-* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback, `autoSaveScore`, and `checkUsernameAvailability` helpers.
+* **`utils/leaderboardApi.js`**: Fetches from Node.js Express API (`import.meta.env.VITE_API_URL` or `https://arcade-backend-gtgl.onrender.com/api`) with automatic LocalStorage fallback, `autoSaveScore`, `checkUsernameAvailability`, and 7-day handle expiration (`checkHandleExpiration`).
 * **Universal Auto-Save Engine**: Monitors active game runs and automatically persists high scores if the player navigates away, switches games, or refreshes the page (`beforeunload`, `pagehide`).
-* **Mandatory Real-Time Username Claim Engine (`UsernameModal.jsx`, `PlayerHandleWidget.jsx`)**: Prompts unrecognized visitors for a unique username, verifies availability in real-time against live scores, and locks it permanently to browser profile cookies. All other inline name inputs removed.
+* **Mandatory Real-Time Username Claim & 7-Day Pruning Engine (`UsernameModal.jsx`, `PlayerHandleWidget.jsx`)**: Prompts unrecognized visitors for a unique username, verifies availability in real-time, and auto-prunes handles inactive for >7 days. All handles reset to `[]` for a fresh start right now.
 
 ---
 
